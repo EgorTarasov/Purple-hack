@@ -1,0 +1,29 @@
+server:
+  port: 9999
+  logLevel: "debug"
+  corsOrigins: "http://localhost:3000"
+
+postgres:
+  user: "pguser"
+  password: "pgpass"
+  host: "localhost"
+  port: 5432
+  db: "dev"
+  ssl: false
+
+jwt:
+  secret: "secret"
+  expTime: 1800
+  encryptionKey: "26c68b29efd045d078e5c7a06a1d40be"
+
+redis:
+  password: ""
+  host: "localhost"
+  port: 6379
+  db: 0
+
+mail:
+  host: "smtp.mail.ru"
+  port: 465
+  email: "misis.larek.deda@mail.ru"
+  password: "u0m8fuvkCq3qS1yitaBu"
