@@ -3,12 +3,13 @@ package repo
 import (
 	"context"
 	"fmt"
+	"purple/internal/api"
+	"purple/internal/api/data"
+	"purple/internal/shared"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 	"github.com/yogenyslav/storage/postgres"
-	"hack/internal/api"
-	"hack/internal/api/data"
-	"hack/internal/shared"
 )
 
 const (

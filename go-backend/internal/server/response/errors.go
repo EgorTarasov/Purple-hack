@@ -1,10 +1,11 @@
 package response
 
 import (
+	"net/http"
+	"purple/internal/shared"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5"
-	"hack/internal/shared"
-	"net/http"
 )
 
 var errStatus = map[error]ErrorResponse{

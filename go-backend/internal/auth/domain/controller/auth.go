@@ -3,17 +3,18 @@ package controller
 import (
 	"context"
 	"errors"
+	"purple/internal/api"
+	"purple/internal/api/data"
+	"purple/internal/auth"
+	"purple/internal/auth/domain"
+	"purple/internal/shared"
+	"purple/pkg"
+	"purple/pkg/jwt"
+	"purple/pkg/secure"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/redis/go-redis/v9"
 	"github.com/yogenyslav/logger"
-	"hack/internal/api"
-	"hack/internal/api/data"
-	"hack/internal/auth"
-	"hack/internal/auth/domain"
-	"hack/internal/shared"
-	"hack/pkg"
-	"hack/pkg/jwt"
-	"hack/pkg/secure"
 )
 
 type authController struct {

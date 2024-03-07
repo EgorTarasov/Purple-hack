@@ -28,10 +28,10 @@ services:
 
   server:
     build:
-      context: ./.
+      context: ./go-backend
       dockerfile: Dockerfile
       target: prod
-    image: hack-template
+    image: purple
     depends_on:
       - pg
       - redis
@@ -39,4 +39,4 @@ services:
       - "9999:9999"
     command: ./main
     volumes:
-      - ./logs:/logs
+      - ./go-backend/logs:/logs

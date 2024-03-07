@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"hack/internal/api/domain"
+	"purple/internal/api/domain"
 )
 
 type UserController interface {

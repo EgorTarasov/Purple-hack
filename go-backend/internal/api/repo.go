@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"hack/internal/api/data"
+	"purple/internal/api/data"
 )
 
 type UserRepo interface {

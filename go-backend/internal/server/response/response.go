@@ -3,11 +3,12 @@ package response
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"purple/pkg"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogenyslav/logger"
-	"hack/pkg"
-	"net/http"
 )
 
 type ErrorResponse struct {

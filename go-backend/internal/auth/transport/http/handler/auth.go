@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"net/http"
+	"purple/internal/auth"
+	"purple/internal/auth/domain"
+	"purple/pkg/jwt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"hack/internal/auth"
-	"hack/internal/auth/domain"
-	"hack/pkg/jwt"
-	"net/http"
 )
 
 type authHandler struct {

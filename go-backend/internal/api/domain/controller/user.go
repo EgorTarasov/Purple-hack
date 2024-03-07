@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"purple/internal/api"
+	"purple/internal/api/domain"
+	"purple/internal/shared"
+	"purple/pkg"
+	"purple/pkg/mailing"
+	"purple/pkg/secure"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/redis/go-redis/v9"
 	"github.com/yogenyslav/logger"
-	"hack/internal/api"
-	"hack/internal/api/domain"
-	"hack/internal/shared"
-	"hack/pkg"
-	"hack/pkg/mailing"
-	"hack/pkg/secure"
 )
 
 type userController struct {

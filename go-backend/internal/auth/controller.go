@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"hack/internal/auth/domain"
+	"purple/internal/auth/domain"
 )
 
 type Controller interface {

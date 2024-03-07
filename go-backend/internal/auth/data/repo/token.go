@@ -3,10 +3,11 @@ package repo
 import (
 	"context"
 	"fmt"
-	"github.com/redis/go-redis/v9"
-	"hack/internal/auth"
-	"hack/internal/shared"
+	"purple/internal/auth"
+	"purple/internal/shared"
 	"strconv"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type tokenRepo struct {

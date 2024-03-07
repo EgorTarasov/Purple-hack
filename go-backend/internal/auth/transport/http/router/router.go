@@ -1,8 +1,9 @@
 package router
 
 import (
+	"purple/internal/auth"
+
 	"github.com/gofiber/fiber/v2"
-	"hack/internal/auth"
 )
 
 func Setup(app *fiber.App, h auth.Handler) {

@@ -2,23 +2,24 @@ package server
 
 import (
 	"fmt"
-	"github.com/gofiber/swagger"
-	"hack/config"
-	_ "hack/docs"
-	"hack/internal/api/data/repo"
-	"hack/internal/api/domain/controller"
-	"hack/internal/api/transport/http/handler"
-	"hack/internal/api/transport/http/middleware"
-	"hack/internal/api/transport/http/router"
-	authRepo "hack/internal/auth/data/repo"
-	authController "hack/internal/auth/domain/controller"
-	authHandler "hack/internal/auth/transport/http/handler"
-	authRouter "hack/internal/auth/transport/http/router"
-	"hack/internal/server/response"
-	"hack/pkg/mailing"
 	"os"
 	"os/signal"
+	"purple/config"
+	_ "purple/docs"
+	"purple/internal/api/data/repo"
+	"purple/internal/api/domain/controller"
+	"purple/internal/api/transport/http/handler"
+	"purple/internal/api/transport/http/middleware"
+	"purple/internal/api/transport/http/router"
+	authRepo "purple/internal/auth/data/repo"
+	authController "purple/internal/auth/domain/controller"
+	authHandler "purple/internal/auth/transport/http/handler"
+	authRouter "purple/internal/auth/transport/http/router"
+	"purple/internal/server/response"
+	"purple/pkg/mailing"
 	"syscall"
+
+	"github.com/gofiber/swagger"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -85,7 +86,7 @@ func (s *Server) Run() {
 	mailSever := mailing.NewMailServer(&s.cfg.Mail)
 
 	userController := controller.NewUserController(userRepo, mailSever)
-	userHandler := handler.NewUserHandler(userController)
+	userHandler := handler.NewUserHttpHandler(userController)
 	router.SetupUserRoutes(apiRouter, userHandler, mw)
 
 	go s.listen()

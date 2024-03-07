@@ -2,14 +2,15 @@ package middleware
 
 import (
 	"fmt"
+	"purple/internal/api"
+	"purple/internal/auth"
+	"purple/internal/shared"
+	"purple/pkg/jwt"
+	"purple/pkg/secure"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	jwtWare "github.com/golang-jwt/jwt/v5"
-	"hack/internal/api"
-	"hack/internal/auth"
-	"hack/internal/shared"
-	"hack/pkg/jwt"
-	"hack/pkg/secure"
-	"strconv"
 )
 
 type apiMiddleware struct {

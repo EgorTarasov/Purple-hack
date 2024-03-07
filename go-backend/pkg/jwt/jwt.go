@@ -3,14 +3,15 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	jwtWare "github.com/golang-jwt/jwt/v5"
-	"hack/internal/auth/domain"
-	"hack/internal/shared"
-	"hack/pkg"
-	"hack/pkg/secure"
+	"purple/internal/auth/domain"
+	"purple/internal/shared"
+	"purple/pkg"
+	"purple/pkg/secure"
 	"strconv"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	jwtWare "github.com/golang-jwt/jwt/v5"
 )
 
 type AuthUserParams struct {

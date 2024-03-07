@@ -1,27 +1,28 @@
 package handler
 
 import (
+	"net/http"
+	"purple/internal/api"
+	"purple/internal/api/domain"
+	"purple/internal/shared"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"hack/internal/api"
-	"hack/internal/api/domain"
-	"hack/internal/shared"
-	"net/http"
 )
 
-type userHandler struct {
+type userHttpHandler struct {
 	controller api.UserController
 	validator  *validator.Validate
 }
 
-func NewUserHandler(controller api.UserController) api.UserHandler {
-	return &userHandler{
+func NewUserHttpHandler(controller api.UserController) api.UserHttpHandler {
+	return &userHttpHandler{
 		controller: controller,
 		validator:  validator.New(validator.WithRequiredStructEnabled()),
 	}
 }
 
-func (h *userHandler) Me(ctx *fiber.Ctx) error {
+func (h *userHttpHandler) Me(ctx *fiber.Ctx) error {
 	userId := ctx.Locals(shared.UserIdField).(int64)
 	user, err := h.controller.Me(ctx.Context(), userId)
 	if err != nil {
@@ -31,7 +32,7 @@ func (h *userHandler) Me(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(user)
 }
 
-func (h *userHandler) ResetPasswordCode(ctx *fiber.Ctx) error {
+func (h *userHttpHandler) ResetPasswordCode(ctx *fiber.Ctx) error {
 	var (
 		req domain.ResetPasswordCodeReq
 		err error
@@ -50,7 +51,7 @@ func (h *userHandler) ResetPasswordCode(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (h *userHandler) ValidateResetPasswordCode(ctx *fiber.Ctx) error {
+func (h *userHttpHandler) ValidateResetPasswordCode(ctx *fiber.Ctx) error {
 	var (
 		req domain.ValidateResetPasswordReq
 		err error
@@ -69,7 +70,7 @@ func (h *userHandler) ValidateResetPasswordCode(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(http.StatusNoContent)
 }
 
-func (h *userHandler) ResetPassword(ctx *fiber.Ctx) error {
+func (h *userHttpHandler) ResetPassword(ctx *fiber.Ctx) error {
 	var (
 		req domain.ResetPasswordReq
 		err error

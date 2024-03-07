@@ -1,11 +1,12 @@
 package config
 
 import (
+	"purple/pkg/jwt"
+	"purple/pkg/mailing"
+
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/yogenyslav/logger"
 	"github.com/yogenyslav/storage/postgres"
-	"hack/pkg/jwt"
-	"hack/pkg/mailing"
 )
 
 type Config struct {
