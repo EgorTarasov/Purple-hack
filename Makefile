@@ -12,7 +12,6 @@ docker_down:
 
 docker_remove: docker_down
 	docker volume rm purple_pg_data
-	docker volume rm purple_redis_data
 	docker image rm purple
 
 docker_restart: docker_down docker_up
@@ -20,5 +19,5 @@ docker_restart: docker_down docker_up
 docker_purge_restart: docker_remove docker_up
 
 local: swag
-	docker compose up pg redis -d
+	docker compose up pg -d
 	cd go-backend && go run cmd/main.go

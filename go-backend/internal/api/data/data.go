@@ -1,22 +1,30 @@
 package data
 
-import "time"
+import (
+	"time"
 
-type User struct {
-	Id            int64     `db:"id"`
-	Email         string    `db:"email"`
-	Password      string    `db:"password"`
-	FirstName     string    `db:"first_name"`
-	LastName      string    `db:"last_name"`
-	LastPassReset time.Time `db:"last_pass_reset"`
-	CreatedAt     time.Time `db:"created_at"`
-	UpdatedAt     time.Time `db:"updated_at"`
+	"github.com/google/uuid"
+)
+
+type Session struct {
+	Id          uuid.UUID `db:"id"`
+	PromptIds   []int64   `db:"prompt_ids"`
+	ResponseIds []int64   `db:"response_ids"`
+	CreatedAt   time.Time `db:"created_at"`
 }
 
-type GeoObject struct {
+type Prompt struct {
 	Id        int64     `db:"id"`
-	Latitude  float64   `db:"latitude"`
-	Longitude float64   `db:"longitude"`
+	SessionId uuid.UUID `db:"fk_session_id"`
+	Body      string    `db:"body"`
+	UserAgent string    `db:"user_agent"`
 	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+}
+
+type Response struct {
+	Id        int64     `db:"id"`
+	SessionId uuid.UUID `db:"fk_session_id"`
+	PromptId  int64     `db:"fk_prompt_id"`
+	Body      string    `db:"body"`
+	CreatedAt time.Time `db:"created_at"`
 }

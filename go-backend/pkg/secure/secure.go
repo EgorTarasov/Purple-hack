@@ -4,26 +4,12 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"io"
+
 	"purple/internal/shared"
-	"sync"
-
-	"golang.org/x/crypto/bcrypt"
 )
-
-var mu sync.Mutex
-
-func GetPasswordHash(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(hash), err
-}
-
-func VerifyPassword(hash, plain string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain)) == nil
-}
 
 func Encrypt(toEncrypt, keyString string) (string, error) {
 	key, _ := hex.DecodeString(keyString)
@@ -61,20 +47,4 @@ func Decrypt(toDecrypt, keyString string) (string, error) {
 	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(cipherText, cipherText)
 	return string(cipherText), nil
-}
-
-func GeneratePassResetCode() (string, error) {
-	codeRaw := make([]byte, 3)
-	if _, err := rand.Read(codeRaw); err != nil {
-		return "", err
-	}
-	code := hex.EncodeToString(codeRaw)
-	return code, nil
-}
-
-func GenerateHash(src string) string {
-	mu.Lock()
-	hash := sha256.Sum256([]byte(src))
-	mu.Unlock()
-	return base64.StdEncoding.EncodeToString(hash[:])
 }

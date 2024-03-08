@@ -11,7 +11,7 @@ func main() {
 	cfg := config.MustNew("config/config.yaml")
 
 	logger.SetLevel(logger.ParseLevel(cfg.Server.LogLevel))
-	logger.SetFileOutput("./logs/purple-template-ssr.log", true)
+	logger.SetFileOutput("./logs/purple.log", true)
 	logger.Debugf("loaded config: %+v", *cfg)
 
 	s := server.New(cfg)
