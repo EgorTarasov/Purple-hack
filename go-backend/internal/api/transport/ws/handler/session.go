@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"sync"
-
 	"purple/internal/shared"
 
 	"github.com/gofiber/contrib/websocket"
@@ -12,7 +10,6 @@ import (
 
 type session struct {
 	id uuid.UUID
-	mu sync.Mutex
 }
 
 type SessionWsHandler struct {
@@ -33,9 +30,9 @@ func (h *SessionWsHandler) Serve() {
 	for {
 		select {
 		case conn := <-h.register:
-			id, err := uuid.Parse(conn.Query("id"))
+			id, err := uuid.Parse(conn.Params("id"))
 			if err != nil {
-				logger.Error(shared.ErrSessionIdInvalid)
+				logger.Errorf("%v: %v", shared.ErrSessionIdInvalid, err)
 				err = conn.WriteMessage(websocket.TextMessage, []byte(shared.ErrSessionIdInvalid.Error()))
 				if err != nil {
 					logger.Errorf("failed to write message: %v", err)
@@ -50,7 +47,7 @@ func (h *SessionWsHandler) Serve() {
 
 		case conn := <-h.unregister:
 			delete(h.sessions, conn)
-			idRaw := conn.Query("id")
+			idRaw := conn.Params("id")
 			id, err := uuid.Parse(idRaw)
 			if err != nil {
 				logger.Errorf("failed to delete session: %v :%v", shared.ErrSessionIdInvalid, err)
@@ -91,7 +88,6 @@ func (h *SessionWsHandler) Chat(c *websocket.Conn) {
 		logger.Infof("got message %s", msg)
 		if err = c.WriteMessage(mt, []byte("pupupu")); err != nil {
 			logger.Error(err)
-			break
 		}
 	}
 }

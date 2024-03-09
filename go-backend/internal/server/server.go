@@ -8,7 +8,6 @@ import (
 	"syscall"
 
 	"purple/config"
-	_ "purple/docs"
 	"purple/internal/api/transport/ws"
 	wsHandler "purple/internal/api/transport/ws/handler"
 	"purple/internal/server/response"
