@@ -15,12 +15,14 @@ interface WebsocketProviderProps {
 	children: ReactNode;
 	socketUuid: string;
     messageListDefault: IMessage[];
+	modelType: string;
 }
 
 export const WebsocketProvider = ({
 	children,
 	socketUuid,
     messageListDefault,
+	modelType,
 }: WebsocketProviderProps) => {
 	const [isReady, setIsReady] = useState<boolean>(false);
 	const [val, setVal] = useState<string>("");
@@ -29,7 +31,7 @@ export const WebsocketProvider = ({
 
 	useEffect(() => {
         setMessageList([]);
-		const socket = new WebSocket(`wss://echo.websocket.events/${socketUuid}`);
+		const socket = new WebSocket(`wss://echo.websocket.events/${socketUuid}?model=${modelType}`);
 
 		socket.onopen = () => setIsReady(true);
 		socket.onclose = () => setIsReady(false);
@@ -42,7 +44,7 @@ export const WebsocketProvider = ({
 				ws.current.close();
 			}
 		};
-	}, [socketUuid]);
+	}, [socketUuid, modelType]);
 
 	const sendMessage = (data: string) => {
 		if (ws.current) {

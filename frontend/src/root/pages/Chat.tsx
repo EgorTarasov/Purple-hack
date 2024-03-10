@@ -24,7 +24,7 @@ const Chat = () => {
 					<ModelSelect onSelectChange={handleModelSelectChange} />
 				</div>
 				{id && (
-					<WebsocketProvider socketUuid={id} messageListDefault={[]}>
+					<WebsocketProvider socketUuid={id} messageListDefault={[]} modelType={selectedModel}>
 						<ChatArea />
 					</WebsocketProvider>
 				)}
