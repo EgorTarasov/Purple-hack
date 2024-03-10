@@ -1,4 +1,4 @@
-.DS_Store
-.idea
-.vscode
-*.log
+__pycache__/
+tmp/
+.idea/
+.env
