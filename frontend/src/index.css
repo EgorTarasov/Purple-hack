@@ -74,7 +74,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-#root {
-  /* background: linear-gradient(90deg, #E5FDE3 0%, white 100%); */
-}
