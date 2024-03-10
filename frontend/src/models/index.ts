@@ -8,3 +8,10 @@ export interface IBubblePath {
     label: string;
     marginTop: number;
 }
+
+export interface IMessage {
+    id: string;
+    senderChat: boolean; 
+    data: string;
+    time: string;
+}

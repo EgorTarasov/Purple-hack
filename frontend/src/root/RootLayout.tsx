@@ -7,7 +7,7 @@ const RootLayout = () => {
       <TopBar />
       {/* <LeftSideBar /> */}
 
-      <section className="min-h-[calc(100vh-88px)] p-10">
+      <section className="h-[calc(100vh-88px)]">
         <Outlet />
       </section>
 

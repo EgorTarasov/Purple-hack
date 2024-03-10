@@ -19,6 +19,7 @@ export default {
     extend: {
       colors: {
         'secondary-medium': '#E3E8FD',
+        'border-color' : '#74777B',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
