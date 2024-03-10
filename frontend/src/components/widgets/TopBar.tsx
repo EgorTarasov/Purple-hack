@@ -4,6 +4,7 @@ import logoPath from "../../assets/MediumLogo.svg";
 import { topBarLinks } from "@/constants";
 import { INavLink } from "@/models";
 import uuid from "react-uuid";
+import CreateAccountDialog from "./CreateAccountDialog";
 
 const TopBar = () => {
 	const { pathname } = useLocation();
@@ -13,25 +14,32 @@ const TopBar = () => {
 				<img src={logoPath} alt="logo" width={130} height={325} />
 			</Link>
 
-			<ul className="flex gap">
-				{topBarLinks.map((link: INavLink) => {
-					const index = pathname.lastIndexOf("/");
-					const concatedPathname = pathname.substring(0, index);
-					const isActive = pathname === link.route || concatedPathname === link.route;
-					let linkTo = link.route;
-					if(link.route === '/chat') linkTo += `/${uuid()}`;
+			<div className="flex">
+				<ul className="flex gap">
+					{topBarLinks.map((link: INavLink) => {
+						const index = pathname.lastIndexOf("/");
+						const concatedPathname = pathname.substring(0, index);
+						const isActive =
+							pathname === link.route || concatedPathname === link.route;
+						let linkTo = link.route;
+						if (link.route === "/chat") linkTo += `/${uuid()}`;
 
-					return (
-						<li key={link.label}>
-							<NavLink to={linkTo} className="flex-center gap-3">
-								<Button variant="link" className={`${isActive && "underline"}`}>
-									{link.label}
-								</Button>
-							</NavLink>
-						</li>
-					);
-				})}
-			</ul>
+						return (
+							<li key={link.label}>
+								<NavLink to={linkTo} className="flex-center gap-3">
+									<Button
+										variant="link"
+										className={`${isActive && "underline"}`}
+									>
+										{link.label}
+									</Button>
+								</NavLink>
+							</li>
+						);
+					})}
+				</ul>
+				<CreateAccountDialog />
+			</div>
 		</section>
 	);
 };

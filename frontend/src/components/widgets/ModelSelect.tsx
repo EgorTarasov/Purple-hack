@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Select,
   SelectContent,
@@ -6,21 +7,32 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-export default function ModelSelect() {
+interface ModelSelectProps {
+  onSelectChange: (value: string) => void;
+}
+
+const ModelSelect: React.FC<ModelSelectProps> = ({ onSelectChange }) => {
+
+
+
   return (
-    <Select>
+    <Select onValueChange={(value)=>{
+      onSelectChange(value);
+    }} >
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Модель" />
+        <SelectValue placeholder="LLAMA 2" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Модель</SelectLabel>
-          <SelectItem value="apple">LLAMA 2</SelectItem>
-          <SelectItem value="banana">FRED T5</SelectItem>
+          <SelectItem value="llama">LLAMA 2</SelectItem>
+          <SelectItem value="fred">FRED T5</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
-  )
+  );
 }
+
+export default ModelSelect;
