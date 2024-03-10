@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import logoPath from "../../assets/MediumLogo.svg";
 import { topBarLinks } from "@/constants";
 import { INavLink } from "@/models";
+import uuid from "react-uuid";
 
 const TopBar = () => {
 	const { pathname } = useLocation();
@@ -14,11 +15,15 @@ const TopBar = () => {
 
 			<ul className="flex gap">
 				{topBarLinks.map((link: INavLink) => {
-					const isActive = pathname === link.route;
+					const index = pathname.lastIndexOf("/");
+					const concatedPathname = pathname.substring(0, index);
+					const isActive = pathname === link.route || concatedPathname === link.route;
+					let linkTo = link.route;
+					if(link.route === '/chat') linkTo += `/${uuid()}`;
 
 					return (
 						<li key={link.label}>
-							<NavLink to={link.route} className="flex-center gap-3">
+							<NavLink to={linkTo} className="flex-center gap-3">
 								<Button variant="link" className={`${isActive && "underline"}`}>
 									{link.label}
 								</Button>

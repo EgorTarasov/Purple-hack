@@ -3,12 +3,12 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Message from "../entities/Message";
-// import { WebsocketContext } from "@/context/WebSocketProvider";
+import { WebsocketContext } from "@/context/WebSocketProvider";
 import { IMessage } from "@/models";
 import uuid from 'react-uuid';
 
 function ChatArea() {
-	// const [ready, val, send] = useContext(WebsocketContext);
+	const [ready, val, send] = useContext(WebsocketContext);
 
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [messageList, setMessageList] = useState<IMessage[]>([]);
@@ -25,27 +25,27 @@ function ChatArea() {
         id: uuid(),
 			};
 
-			// if (ready) {
-			// 	send("message");
-			// }
+			if (ready) {
+				send("message");
+			}
 
 			setMessageList((list) => [...list, messageData]);
 			setCurrentMessage("");
 		}
 	};
 
-	// useEffect(() => {
-	// 	const messageData: IMessage = {
-	// 		data: val,
-	// 		time:
-	// 			new Date(Date.now()).getHours() +
-	// 			":" +
-	// 			new Date(Date.now()).getMinutes(),
-	// 		senderChat: true,
-  //    id: uuid(),
-	// 	};
-	// 	setMessageList((list) => [...list, messageData]);
-	// }, [val]);
+	useEffect(() => {
+		const messageData: IMessage = {
+			data: val,
+			time:
+				new Date(Date.now()).getHours() +
+				":" +
+				new Date(Date.now()).getMinutes(),
+			senderChat: true,
+     id: uuid(),
+		};
+		setMessageList((list) => [...list, messageData]);
+	}, [val]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

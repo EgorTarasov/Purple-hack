@@ -9,7 +9,7 @@ const App = () => {
 				{/* public routes */}
 				<Route element={<RootLayout />}>
 					<Route path="/" element={<Home />} />
-					<Route path="/chat" element={<Chat />} />
+					<Route path="/chat/:id" element={<Chat />} />
 				</Route>
 			</Routes>
 		</main>

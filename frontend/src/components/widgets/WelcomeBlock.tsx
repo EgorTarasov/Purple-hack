@@ -1,5 +1,6 @@
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
+import uuid from "react-uuid";
 
 const WelcomeBlock = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const WelcomeBlock = () => {
 				Узнайте всё о работе Центрального банка РФ
 			</div>
 			<div className="mb-7">Задайте любой вопрос в диалоговом формате чата</div>
-			<Button onClick={()=>{navigate('chat')}}>Начать</Button>
+			<Button onClick={()=>{navigate(`chat/${uuid()}`)}}>Начать</Button>
 		</div>
 	);
 };
