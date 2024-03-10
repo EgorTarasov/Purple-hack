@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupSessionSocket(app *fiber.App, h api.SessionWsHandler, cfg *websocket.Config) {
+func SetupSessionSocket(app *fiber.App, h api.ChatHandler, cfg *websocket.Config) {
 	g := app.Group("/ws")
 	g.Use(middleware.WsProtocolUpgrade())
 

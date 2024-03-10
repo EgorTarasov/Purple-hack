@@ -8,12 +8,16 @@ import (
 	"syscall"
 
 	"purple/config"
+	"purple/internal/api/data/repo"
+	"purple/internal/api/domain/controller"
 	"purple/internal/api/transport/ws"
 	wsHandler "purple/internal/api/transport/ws/handler"
 	"purple/internal/server/response"
 
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/swagger"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -60,10 +64,23 @@ func New(cfg *config.Config) *Server {
 func (s *Server) Run() {
 	defer s.pg.Close()
 
+	var grpcOpts []grpc.DialOption
+	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	seAddr := fmt.Sprintf("%s:%d", s.cfg.SE.Host, s.cfg.SE.Port)
+	searchEngineConn, err := grpc.Dial(seAddr, grpcOpts...)
+	if err != nil {
+		logger.Panicf("failed to connect to searchEngine: %v", err)
+	}
+	defer func() {
+		if err = searchEngineConn.Close(); err != nil {
+			logger.Error(err)
+		}
+	}()
+
 	wsConfig := websocket.Config{
 		Origins: strings.Split(s.cfg.Server.CorsOrigins, ","),
 		RecoverHandler: func(conn *websocket.Conn) {
-			if err := recover(); err != nil {
+			if e := recover(); e != nil {
 				err = conn.WriteJSON(fiber.Map{"error": fmt.Sprintf("internal error: %v", err)})
 				if err != nil {
 					logger.Errorf("failed to handle ws error: %v", err)
@@ -71,12 +88,31 @@ func (s *Server) Run() {
 			}
 		},
 	}
-	sessionWsHandler := wsHandler.NewSessionWsHandler()
+
+	sessionRepo := repo.NewSessionRepo(s.pg)
+	queryRepo := repo.NewQueryRepo(s.pg)
+	responseRepo := repo.NewResponseRepo(s.pg)
+
+	sessionController := controller.NewSessionController(sessionRepo)
+	queryController := controller.NewQueryController(queryRepo)
+	responseController := controller.NewResponseController(responseRepo, searchEngineConn)
+
+	sessionWsHandler := wsHandler.NewChatHandler(sessionController, queryController, responseController)
 	ws.SetupSessionSocket(s.app, sessionWsHandler, &wsConfig)
 
-	go sessionWsHandler.Serve()
 	go s.listen()
-	s.gracefulShutdown()
+
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
+	_ = <-ch
+	s.pg.Close()
+	if err = searchEngineConn.Close(); err != nil {
+		logger.Error(err)
+	}
+	if err = s.app.Shutdown(); err != nil {
+		logger.Error(err)
+	}
+	logger.Info("shutting down the server")
 }
 
 func (s *Server) listen() {
@@ -85,13 +121,4 @@ func (s *Server) listen() {
 	if err := s.app.Listen(addr); err != nil {
 		logger.Fatalf("error has occurred while listening on %s: %v", addr, err)
 	}
-}
-
-func (s *Server) gracefulShutdown() {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	_ = <-ch
-
-	s.pg.Close()
-	logger.Info("shutting down the server")
 }

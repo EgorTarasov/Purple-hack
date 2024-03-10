@@ -6,9 +6,10 @@ import (
 
 // 400
 var (
-	ErrDuplicateKey       = errors.New("duplicate key")
-	ErrWsProtocolRequired = errors.New("upgrade to websocket protocol is required")
-	ErrSessionIdInvalid   = errors.New("invalid session id value")
+	ErrDuplicateKey          = errors.New("duplicate key")
+	ErrWsProtocolRequired    = errors.New("upgrade to websocket protocol is required")
+	ErrSessionIdInvalid      = errors.New("invalid session id value")
+	ErrUnexpectedMessageType = errors.New("unexpected message type, use TextMessage instead")
 )
 
 // 500

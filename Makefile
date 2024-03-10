@@ -19,5 +19,5 @@ docker_restart: docker_down docker_up
 docker_purge_restart: docker_remove docker_up
 
 local: swag
-	docker compose up pg -d
+	docker compose up pg search-engine -d --build
 	cd go-backend && go run cmd/main.go

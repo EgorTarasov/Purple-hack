@@ -3,3 +3,9 @@
 .vscode
 *.log
 *.yaml
+.env
+venv
+news
+pages
+data.json
+node_modules

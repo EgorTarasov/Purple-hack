@@ -6,7 +6,13 @@ server:
 postgres:
   user: "pguser"
   password: "pgpass"
-  host: "pg"
+#  host: "pg"
+  host: "localhost"
   port: 5432
   db: "dev"
   ssl: false
+
+searchEngine:
+#  host: "search-engine"
+  host: "localhost"
+  port: 10000

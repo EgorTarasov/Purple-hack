@@ -8,23 +8,25 @@ import (
 
 type Session struct {
 	Id          uuid.UUID `db:"id"`
-	PromptIds   []int64   `db:"prompt_ids"`
+	QueryIds    []int64   `db:"query_ids"`
 	ResponseIds []int64   `db:"response_ids"`
 	CreatedAt   time.Time `db:"created_at"`
 }
 
-type Prompt struct {
+type Query struct {
 	Id        int64     `db:"id"`
 	SessionId uuid.UUID `db:"fk_session_id"`
 	Body      string    `db:"body"`
+	Model     string    `db:"model"`
 	UserAgent string    `db:"user_agent"`
 	CreatedAt time.Time `db:"created_at"`
 }
 
 type Response struct {
-	Id        int64     `db:"id"`
-	SessionId uuid.UUID `db:"fk_session_id"`
-	PromptId  int64     `db:"fk_prompt_id"`
-	Body      string    `db:"body"`
-	CreatedAt time.Time `db:"created_at"`
+	Id        int64               `db:"id"`
+	SessionId uuid.UUID           `db:"fk_session_id"`
+	QueryId   int64               `db:"fk_query_id"`
+	Body      string              `db:"body"`
+	Context   map[string][]string `db:"context"`
+	CreatedAt time.Time           `db:"created_at"`
 }

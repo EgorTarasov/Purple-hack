@@ -10,7 +10,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./main ./cmd/main.go
 
 FROM scratch as prod
-WORKDIR /prod
+WORKDIR /go-backend
 
 COPY config/config.yaml ./config/
 COPY logs ./logs

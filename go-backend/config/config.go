@@ -7,14 +7,20 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig    `yaml:"server"`
-	Postgres postgres.Config `yaml:"postgres"`
+	Server   ServerConfig       `yaml:"server"`
+	Postgres postgres.Config    `yaml:"postgres"`
+	SE       SearchEngineConfig `yaml:"searchEngine"`
 }
 
 type ServerConfig struct {
 	Port        int    `yaml:"port"`
 	LogLevel    string `yaml:"logLevel"`
 	CorsOrigins string `yaml:"corsOrigins"`
+}
+
+type SearchEngineConfig struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
 }
 
 func MustNew(path string) *Config {

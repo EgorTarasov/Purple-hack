@@ -4,7 +4,6 @@ import (
 	"github.com/gofiber/contrib/websocket"
 )
 
-type SessionWsHandler interface {
-	Serve()
+type ChatHandler interface {
 	Chat(c *websocket.Conn)
 }
