@@ -1,11 +1,26 @@
 import { IMessage } from "@/models";
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+	createContext,
+	Dispatch,
+	ReactNode,
+	SetStateAction,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 
-export type WebsocketContextType = [IMessage[], Dispatch<SetStateAction<IMessage[]>>, boolean, string, (data: string) => void];
+export type WebsocketContextType = [
+	IMessage[],
+	Dispatch<SetStateAction<IMessage[]>>,
+	boolean,
+	string,
+	(data: string) => void
+];
 
 export const WebsocketContext = createContext<WebsocketContextType>([
-    [],
-    () => {},
+	[],
+	() => {},
 	false,
 	"",
 	() => {},
@@ -14,24 +29,27 @@ export const WebsocketContext = createContext<WebsocketContextType>([
 interface WebsocketProviderProps {
 	children: ReactNode;
 	socketUuid: string;
-    messageListDefault: IMessage[];
+	messageListDefault: IMessage[];
 	modelType: string;
 }
 
 export const WebsocketProvider = ({
 	children,
 	socketUuid,
-    messageListDefault,
+	messageListDefault,
 	modelType,
 }: WebsocketProviderProps) => {
 	const [isReady, setIsReady] = useState<boolean>(false);
 	const [val, setVal] = useState<string>("");
 	const ws = useRef<WebSocket | null>(null);
-	const [messageList, setMessageList] = useState<IMessage[]>(messageListDefault);
+	const [messageList, setMessageList] =
+		useState<IMessage[]>(messageListDefault);
 
 	useEffect(() => {
-        setMessageList([]);
-		const socket = new WebSocket(`wss://echo.websocket.events/${socketUuid}?model=${modelType}`);
+		setMessageList([]);
+		const socket = new WebSocket(
+			`wss://echo.websocket.events/${socketUuid}?model=${modelType}`
+		);
 
 		socket.onopen = () => setIsReady(true);
 		socket.onclose = () => setIsReady(false);
@@ -53,8 +71,15 @@ export const WebsocketProvider = ({
 	};
 
 	return (
-		<WebsocketContext.Provider value={[messageList, setMessageList, isReady, val, sendMessage]}>
+		<WebsocketContext.Provider
+			value={[messageList, setMessageList, isReady, val, sendMessage]}
+		>
 			{children}
 		</WebsocketContext.Provider>
 	);
 };
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useWS() {
+	return useContext(WebsocketContext);
+}

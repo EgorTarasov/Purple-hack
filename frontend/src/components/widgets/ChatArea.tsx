@@ -1,11 +1,11 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Message from "../entities/Message";
 import {
-	WebsocketContext,
 	WebsocketContextType,
+	useWS,
 } from "@/context/WebSocketProvider";
 import { IMessage } from "@/models";
 import uuid from "react-uuid";
@@ -14,8 +14,7 @@ function ChatArea() {
 	const maxLengthSymbols = 5000;
 	const [lengthSymbols, setLengthSymbols] = useState(0);
 
-	const [messageList, setMessageList, ready, val, send]: WebsocketContextType =
-		useContext(WebsocketContext);
+	const [messageList, setMessageList, ready, val, send]: WebsocketContextType = useWS();
 
 	const [currentMessage, setCurrentMessage] = useState("");
 

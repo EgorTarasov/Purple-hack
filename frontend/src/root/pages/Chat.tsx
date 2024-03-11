@@ -18,16 +18,20 @@ const Chat = () => {
 	return (
 		<>
 			<div className="flex justify-between">
-				<SideBar />
+				{/* <SideBar />
 				<div className="w-[180px] ml-2 pt-4">
 					<ModelSelect onSelectChange={handleModelSelectChange} />
-				</div>
+				</div> */}
 				{id && (
 					<WebsocketProvider
 						socketUuid={id}
 						messageListDefault={[]}
 						modelType={selectedModel}
 					>
+						<SideBar />
+						<div className="w-[180px] ml-2 pt-4">
+							<ModelSelect onSelectChange={handleModelSelectChange} />
+						</div>
 						<ChatArea />
 					</WebsocketProvider>
 				)}
