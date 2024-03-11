@@ -4,7 +4,7 @@
 // - protoc             v4.25.1
 // source: proto/search_engine.proto
 
-package protos
+package __
 
 import (
 	context "context"
@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SearchEngineClient interface {
 	Respond(ctx context.Context, in *Query, opts ...grpc.CallOption) (*Response, error)
+	RespondStream(ctx context.Context, in *Query, opts ...grpc.CallOption) (SearchEngine_RespondStreamClient, error)
 }
 
 type searchEngineClient struct {
@@ -42,11 +43,44 @@ func (c *searchEngineClient) Respond(ctx context.Context, in *Query, opts ...grp
 	return out, nil
 }
 
+func (c *searchEngineClient) RespondStream(ctx context.Context, in *Query, opts ...grpc.CallOption) (SearchEngine_RespondStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &SearchEngine_ServiceDesc.Streams[0], "/search_engine.SearchEngine/RespondStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &searchEngineRespondStreamClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type SearchEngine_RespondStreamClient interface {
+	Recv() (*Response, error)
+	grpc.ClientStream
+}
+
+type searchEngineRespondStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *searchEngineRespondStreamClient) Recv() (*Response, error) {
+	m := new(Response)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // SearchEngineServer is the server API for SearchEngine service.
 // All implementations must embed UnimplementedSearchEngineServer
 // for forward compatibility
 type SearchEngineServer interface {
 	Respond(context.Context, *Query) (*Response, error)
+	RespondStream(*Query, SearchEngine_RespondStreamServer) error
 	mustEmbedUnimplementedSearchEngineServer()
 }
 
@@ -56,6 +90,9 @@ type UnimplementedSearchEngineServer struct {
 
 func (UnimplementedSearchEngineServer) Respond(context.Context, *Query) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Respond not implemented")
+}
+func (UnimplementedSearchEngineServer) RespondStream(*Query, SearchEngine_RespondStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method RespondStream not implemented")
 }
 func (UnimplementedSearchEngineServer) mustEmbedUnimplementedSearchEngineServer() {}
 
@@ -88,6 +125,27 @@ func _SearchEngine_Respond_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SearchEngine_RespondStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Query)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SearchEngineServer).RespondStream(m, &searchEngineRespondStreamServer{stream})
+}
+
+type SearchEngine_RespondStreamServer interface {
+	Send(*Response) error
+	grpc.ServerStream
+}
+
+type searchEngineRespondStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *searchEngineRespondStreamServer) Send(m *Response) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // SearchEngine_ServiceDesc is the grpc.ServiceDesc for SearchEngine service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +158,12 @@ var SearchEngine_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SearchEngine_Respond_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "RespondStream",
+			Handler:       _SearchEngine_RespondStream_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/search_engine.proto",
 }

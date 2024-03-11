@@ -2,8 +2,6 @@ alter database dev set timezone to 'Europe/Moscow';
 
 create table if not exists session(
     id uuid primary key,
-    query_ids bigint[] default array[]::bigint[],
-    response_ids bigint[] default array[]::bigint[],
     created_at timestamp default current_timestamp
 );
 
@@ -44,4 +42,18 @@ create table langchain_pg_embedding
     custom_id     varchar,
     uuid          uuid not null
         primary key
+);
+
+create table if not exists "user"(
+    id bigserial primary key,
+    email text unique not null,
+    password text not null,
+    created_at timestamp default current_timestamp
+);
+
+create table if not exists users_sessions(
+    fk_user_id bigint references "user"(id),
+    fk_session_id uuid references session(id),
+    created_at timestamp default current_timestamp,
+    primary key (fk_user_id, fk_session_id)
 );

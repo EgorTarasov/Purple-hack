@@ -18,12 +18,25 @@ var errStatus = map[error]ErrorResponse{
 		Msg:    "data validation error",
 		Status: http.StatusUnprocessableEntity,
 	},
+	shared.ErrWsProtocolRequired: {
+		Status: http.StatusUpgradeRequired,
+	},
 	// 400
 	shared.ErrDuplicateKey: {
 		Status: http.StatusBadRequest,
 	},
-	shared.ErrWsProtocolRequired: {
-		Status: http.StatusUpgradeRequired,
+	shared.ErrSessionIdInvalid: {
+		Status: http.StatusBadRequest,
+	},
+	shared.ErrUserIdInvalid: {
+		Status: http.StatusBadRequest,
+	},
+	// 401
+	shared.ErrNoSuchUser: {
+		Status: http.StatusUnauthorized,
+	},
+	shared.ErrInvalidPassword: {
+		Status: http.StatusUnauthorized,
 	},
 	// 500
 	shared.ErrInsertRecord: {

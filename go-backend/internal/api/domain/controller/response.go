@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"io"
 
 	"purple/internal/api"
 	"purple/internal/api/data"
@@ -55,6 +56,7 @@ func (rc *ResponseController) InsertOne(ctx context.Context, params domain.Respo
 	return resp, nil
 }
 
+// Respond deprecated
 func (rc *ResponseController) Respond(ctx context.Context, params domain.Query, sessionId uuid.UUID) (domain.ResponseCreate, error) {
 	var (
 		resp     domain.ResponseCreate
@@ -71,17 +73,84 @@ func (rc *ResponseController) Respond(ctx context.Context, params domain.Query, 
 		return resp, err
 	}
 
-	respContext := make(map[string][]string)
-	for id, obj := range respGrpc.GetContext() {
-		respContext[id] = obj.GetValue()
+	resp = domain.ResponseCreate{
+		SessionId: sessionId,
+		QueryId:   params.Id,
+		Body:      respGrpc.GetBody(),
+		Context:   respGrpc.GetContext(),
+		Model:     params.Model,
+	}
+	return resp, nil
+}
+
+func (rc *ResponseController) RespondStream(
+	ctx context.Context, params domain.Query, sessionId uuid.UUID,
+	ctxCh, bodyCh chan<- string,
+) (domain.ResponseCreate, error) {
+	var (
+		tmp         string
+		resp        domain.ResponseCreate
+		err         error
+		stream      protos.SearchEngine_RespondStreamClient
+		respGrpc    *protos.Response
+		respBody    string
+		respContext string
+	)
+
+	in := protos.Query{
+		Body:  params.Body,
+		Model: params.Model,
+	}
+	stream, err = rc.seClient.RespondStream(ctx, &in)
+	if err != nil {
+		return resp, err
+	}
+
+	for {
+		respGrpc, err = stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return resp, err
+		}
+		logger.Debugf("got from stream: %s", respGrpc.String())
+		if tmp = respGrpc.GetBody(); tmp != "" {
+			respBody += tmp
+			bodyCh <- tmp
+		}
+		if tmp = respGrpc.GetContext(); tmp != "" {
+			respContext += tmp
+			ctxCh <- tmp
+		}
 	}
 
 	resp = domain.ResponseCreate{
 		SessionId: sessionId,
 		QueryId:   params.Id,
-		Body:      respGrpc.GetBody(),
+		Body:      respBody,
 		Context:   respContext,
 		Model:     params.Model,
 	}
 	return resp, nil
+}
+
+func (rc *ResponseController) FindMany(ctx context.Context, sessionId uuid.UUID) ([]domain.Response, error) {
+	responsesDb, err := rc.repo.FindMany(ctx, sessionId)
+	if err != nil {
+		logger.Error(err)
+		return nil, shared.ErrFindRecord
+	}
+
+	responses := make([]domain.Response, 0, len(responsesDb))
+	for _, resp := range responsesDb {
+		responses = append(responses, domain.Response{
+			Id:        resp.Id,
+			Body:      resp.Body,
+			Context:   resp.Context,
+			CreatedAt: resp.CreatedAt,
+		})
+	}
+
+	return responses, nil
 }

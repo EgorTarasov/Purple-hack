@@ -20,12 +20,6 @@ const insertOneQuery = `
 	returning id;
 `
 
-const updateSessionQuery = `
-	update session 
-	set query_ids = array_append(query_ids, $1)
-	where session.id = $2;
-`
-
 const findManyQuery = `
 	select id, fk_session_id, body, user_agent, created_at
 	from query
@@ -39,7 +33,7 @@ func NewQueryRepo(pg *pgxpool.Pool) *QueryRepo {
 }
 
 func (r *QueryRepo) InsertOne(ctx context.Context, params data.Query) (int64, error) {
-	queryId, err := postgres.QueryPrimitive[int64](
+	return postgres.QueryPrimitive[int64](
 		ctx,
 		r.pg,
 		insertOneQuery,
@@ -49,16 +43,8 @@ func (r *QueryRepo) InsertOne(ctx context.Context, params data.Query) (int64, er
 		params.UserAgent,
 		params.CreatedAt,
 	)
-	if err != nil {
-		return 0, err
-	}
-
-	if _, err = r.pg.Exec(ctx, updateSessionQuery, queryId, params.SessionId); err != nil {
-		return 0, err
-	}
-	return queryId, nil
 }
 
 func (r *QueryRepo) FindMany(ctx context.Context, sessionId uuid.UUID) ([]data.Query, error) {
-	return postgres.QueryStruct[[]data.Query](ctx, r.pg, findManyQuery, sessionId)
+	return postgres.QueryStructSlice[data.Query](ctx, r.pg, findManyQuery, sessionId)
 }

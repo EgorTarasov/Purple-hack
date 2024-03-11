@@ -10,8 +10,13 @@ import (
 	"purple/config"
 	"purple/internal/api/data/repo"
 	"purple/internal/api/domain/controller"
+	"purple/internal/api/transport/http/handler"
+	"purple/internal/api/transport/http/router"
 	"purple/internal/api/transport/ws"
 	wsHandler "purple/internal/api/transport/ws/handler"
+	authController "purple/internal/auth/domain/controller"
+	authHandler "purple/internal/auth/transport/http/handler"
+	authRouter "purple/internal/auth/transport/http/router"
 	"purple/internal/server/response"
 
 	"github.com/gofiber/contrib/websocket"
@@ -92,13 +97,22 @@ func (s *Server) Run() {
 	sessionRepo := repo.NewSessionRepo(s.pg)
 	queryRepo := repo.NewQueryRepo(s.pg)
 	responseRepo := repo.NewResponseRepo(s.pg)
+	userRepo := repo.NewUserRepo(s.pg)
 
 	sessionController := controller.NewSessionController(sessionRepo)
 	queryController := controller.NewQueryController(queryRepo)
 	responseController := controller.NewResponseController(responseRepo, searchEngineConn)
+	userController := controller.NewUserController(userRepo)
 
-	sessionWsHandler := wsHandler.NewChatHandler(sessionController, queryController, responseController)
-	ws.SetupSessionSocket(s.app, sessionWsHandler, &wsConfig)
+	chatWsHandler := wsHandler.NewChatHandler(sessionController, queryController, responseController, userController)
+	ws.SetupChatSocket(s.app, chatWsHandler, &wsConfig)
+
+	ac := authController.NewAuthController(userRepo)
+	ah := authHandler.NewAuthHandler(ac)
+	authRouter.SetupAuthRoutes(s.app, ah)
+
+	sessionHandler := handler.NewSessionHandler(sessionController)
+	router.SetupSessionRoutes(s.app, sessionHandler)
 
 	go s.listen()
 

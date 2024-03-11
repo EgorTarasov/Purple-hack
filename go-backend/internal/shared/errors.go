@@ -4,12 +4,20 @@ import (
 	"errors"
 )
 
+var ErrWsProtocolRequired = errors.New("upgrade to websocket protocol is required")
+
 // 400
 var (
 	ErrDuplicateKey          = errors.New("duplicate key")
-	ErrWsProtocolRequired    = errors.New("upgrade to websocket protocol is required")
 	ErrSessionIdInvalid      = errors.New("invalid session id value")
 	ErrUnexpectedMessageType = errors.New("unexpected message type, use TextMessage instead")
+	ErrUserIdInvalid         = errors.New("invalid user id value")
+)
+
+// 401
+var (
+	ErrNoSuchUser      = errors.New("no user with requested email found")
+	ErrInvalidPassword = errors.New("invalid password")
 )
 
 // 500

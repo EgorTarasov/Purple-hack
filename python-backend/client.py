@@ -1,25 +1,34 @@
-# Python
 import grpc
-import search_engine_pb2
-import search_engine_pb2_grpc
+from search_engine_pb2_grpc import SearchEngineStub
+from search_engine_pb2 import Query
 
 
 def run():
-    # Create a gRPC channel
-    channel = grpc.insecure_channel("localhost:10000")
+    # Open a gRPC channel
+    with grpc.insecure_channel("localhost:10000") as channel:
 
-    # Create a stub (client)
-    stub = search_engine_pb2_grpc.SearchEngineStub(channel)
+        # Create a stub (client)
+        stub = SearchEngineStub(channel)
 
-    # Create a valid request message
-    model = "my_model"
-    query = "Каковы критерии определения достаточности денежных средств на банковском счете плательщика, учитывая остаток средств на начало текущего дня и суммы, необходимые для учета?"
-    search_request = search_engine_pb2.Query(body=query, model=model)
+        # Create a valid request
 
-    # Make the call
-    response = stub.Respond(search_request)
+        query = Query(
+            body="Каковы критерии определения достаточности денежных средств на банковском счете плательщика, учитывая остаток средств на начало текущего дня и суммы, необходимые для учета?",
+            model="Your model name",
+        )
 
-    print(f"Response: {response}")
+        # Make the call
+        # response = stub.Respond(query)
+
+        # # Print the response
+        # print(response)
+
+        responses = stub.RespondStream(query)
+
+        # # Iterate over the stream of responses
+        for response in responses:
+            # Print the response
+            print(response)
 
 
 if __name__ == "__main__":

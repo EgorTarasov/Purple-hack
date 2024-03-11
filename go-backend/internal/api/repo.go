@@ -11,6 +11,7 @@ import (
 type SessionRepo interface {
 	InsertOne(ctx context.Context, params data.Session) error
 	FindOne(ctx context.Context, id uuid.UUID) (data.Session, error)
+	List(ctx context.Context, userId int64) ([]data.Session, error)
 }
 
 type QueryRepo interface {
@@ -21,4 +22,8 @@ type QueryRepo interface {
 type ResponseRepo interface {
 	InsertOne(ctx context.Context, params data.Response) (int64, error)
 	FindMany(ctx context.Context, sessionId uuid.UUID) ([]data.Response, error)
+}
+
+type UserRepo interface {
+	SaveSession(ctx context.Context, userId int64, sessionId uuid.UUID) error
 }

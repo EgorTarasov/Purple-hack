@@ -9,6 +9,7 @@ import (
 	"purple/internal/shared"
 	"purple/pkg"
 
+	"github.com/google/uuid"
 	"github.com/yogenyslav/logger"
 )
 
@@ -48,4 +49,24 @@ func (qc *QueryController) InsertOne(ctx context.Context, params domain.QueryCre
 		CreatedAt: query.CreatedAt,
 	}
 	return result, nil
+}
+
+func (qc *QueryController) FindMany(ctx context.Context, sessionId uuid.UUID) ([]domain.Query, error) {
+	queriesDb, err := qc.repo.FindMany(ctx, sessionId)
+	if err != nil {
+		logger.Error(err)
+		return nil, shared.ErrFindRecord
+	}
+
+	queries := make([]domain.Query, 0, len(queriesDb))
+	for _, query := range queriesDb {
+		queries = append(queries, domain.Query{
+			Id:        query.Id,
+			Model:     query.Model,
+			Body:      query.Body,
+			CreatedAt: query.CreatedAt,
+		})
+	}
+
+	return queries, nil
 }

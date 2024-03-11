@@ -4,6 +4,7 @@ package search_engine;
 
 service SearchEngine {
   rpc Respond (Query) returns (Response) {}
+  rpc RespondStream (Query) returns (stream Response) {}
 }
 
 message Query {
@@ -13,9 +14,5 @@ message Query {
 
 message Response {
   string body = 1;
-  map<string, StringList> context = 2;
-}
-
-message StringList {
-  repeated string value = 1;
+  string context = 2;
 }

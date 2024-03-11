@@ -19,6 +19,11 @@ class SearchEngineStub(object):
                 request_serializer=search__engine__pb2.Query.SerializeToString,
                 response_deserializer=search__engine__pb2.Response.FromString,
                 )
+        self.RespondStream = channel.unary_stream(
+                '/search_engine.SearchEngine/RespondStream',
+                request_serializer=search__engine__pb2.Query.SerializeToString,
+                response_deserializer=search__engine__pb2.Response.FromString,
+                )
 
 
 class SearchEngineServicer(object):
@@ -30,11 +35,22 @@ class SearchEngineServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RespondStream(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SearchEngineServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Respond': grpc.unary_unary_rpc_method_handler(
                     servicer.Respond,
+                    request_deserializer=search__engine__pb2.Query.FromString,
+                    response_serializer=search__engine__pb2.Response.SerializeToString,
+            ),
+            'RespondStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.RespondStream,
                     request_deserializer=search__engine__pb2.Query.FromString,
                     response_serializer=search__engine__pb2.Response.SerializeToString,
             ),
@@ -60,6 +76,23 @@ class SearchEngine(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/search_engine.SearchEngine/Respond',
+            search__engine__pb2.Query.SerializeToString,
+            search__engine__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RespondStream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/search_engine.SearchEngine/RespondStream',
             search__engine__pb2.Query.SerializeToString,
             search__engine__pb2.Response.FromString,
             options, channel_credentials,

@@ -21,9 +21,19 @@ const insertOneSession = `
 `
 
 const findOneSession = `
-	select id, query_ids, response_ids, created_at
+	select id, created_at
 	from session
 	where id=$1;
+`
+
+const listSessions = `
+	select id, created_at
+	from session
+	where id in (
+	    select fk_session_id
+	    from users_sessions
+	    where fk_user_id=$1
+	);
 `
 
 func NewSessionRepo(pg *pgxpool.Pool) *SessionRepo {
@@ -39,4 +49,8 @@ func (r *SessionRepo) InsertOne(ctx context.Context, params data.Session) error 
 
 func (r *SessionRepo) FindOne(ctx context.Context, id uuid.UUID) (data.Session, error) {
 	return postgres.QueryStruct[data.Session](ctx, r.pg, findOneSession, id)
+}
+
+func (r *SessionRepo) List(ctx context.Context, userId int64) ([]data.Session, error) {
+	return postgres.QueryStructSlice[data.Session](ctx, r.pg, listSessions, userId)
 }
