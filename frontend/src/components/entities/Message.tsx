@@ -22,7 +22,7 @@ const Message = ({ message }: IMessageProps) => {
 						<p className="font-bold">{message.senderChat ? "Чат" : "Вы"}</p>
 						<div className="ml-2 mt-0.7">{message.time}</div>
 					</div>
-					<pre style={{ wordWrap: "break-word", maxWidth: '100%', whiteSpace: 'pre-wrap' }}>{message.data}</pre>
+					<pre style={{ wordBreak: "break-all", maxWidth: '100%', whiteSpace: 'pre-wrap' }}>{message.data}</pre>
 				</div>
 			</div>
 		</div>

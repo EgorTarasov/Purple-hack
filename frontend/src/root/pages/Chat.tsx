@@ -4,6 +4,8 @@ import { WebsocketProvider } from "@/context/WebSocketProvider";
 import { useParams } from "react-router-dom";
 import ModelSelect from "@/components/widgets/ModelSelect";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 const Chat = () => {
 	const { id } = useParams<{ id: string }>();
@@ -17,7 +19,7 @@ const Chat = () => {
 
 	return (
 		<>
-			<div className="flex justify-between">
+			<div className="h-full flex justify-between bg-white">
 				{/* <SideBar />
 				<div className="w-[180px] ml-2 pt-4">
 					<ModelSelect onSelectChange={handleModelSelectChange} />
@@ -29,11 +31,27 @@ const Chat = () => {
 						modelType={selectedModel}
 					>
 						<SideBar />
-						<div className="w-[180px] ml-2 pt-4">
-							<ModelSelect onSelectChange={handleModelSelectChange} />
+						<div className="grow">
+							<div className="m-2 flex justify-between">
+								<ModelSelect onSelectChange={handleModelSelectChange} />
+								<Button>
+									<Download />
+								</Button>
+							</div>
+							<ChatArea />
 						</div>
-						<ChatArea />
 					</WebsocketProvider>
+					// <WebsocketProvider
+					// 	socketUuid={id}
+					// 	messageListDefault={[]}
+					// 	modelType={selectedModel}
+					// >
+					// 	<SideBar />
+					// 	<div className="w-[180px] ml-2 pt-4">
+					// 		<ModelSelect onSelectChange={handleModelSelectChange} />
+					// 	</div>
+					// 	<ChatArea />
+					// </WebsocketProvider>
 				)}
 			</div>
 		</>

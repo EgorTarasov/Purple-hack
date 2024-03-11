@@ -68,9 +68,9 @@ function ChatArea() {
 	}, [currentMessage]);
 
 	return (
-		<div className="grow mx-10 my-4">
+		<div className="mx-10 my-4">
 			<ScrollArea
-				className="h-[calc(100vh-300px)] p-5 mb-5 rounded-md border bg-white"
+				className="h-[calc(100vh-250px)] p-5 mb-5 border-none bg-white"
 				scrollRef={scrollRef}
 			>
 				{messageList.map((messageContent) => {
