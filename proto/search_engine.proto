@@ -1,23 +1,23 @@
 syntax = "proto3";
 
-option go_package = "example.com/go-backend/proto";
-
 package search_engine;
 
 service SearchEngine {
-    rpc Respond (Query) returns (Response) {}
+  rpc Respond (Query) returns (Response) {}
+  rpc RespondStream (Query) returns (stream Response) {}
 }
 
 message Query {
-    string body = 1;
-    string model = 2;
+  string body = 1;
+  string model = 2;
 }
 
 message Response {
-    string body = 1;
-    map<string, StringList> context = 2;
+  string body = 1;
+  string context = 2;
 }
 
-message StringList {
-    repeated string value = 1;
-}
+// message TokenResponse {
+//   optional string body = 1;
+//   optional string context = 2;
+// }

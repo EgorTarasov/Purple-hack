@@ -14,24 +14,17 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13search_engine.proto\x12\rsearch_engine\"$\n\x05Query\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t\x12\r\n\x05model\x18\x02 \x01(\t\"\x9a\x01\n\x08Response\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t\x12\x35\n\x07\x63ontext\x18\x02 \x03(\x0b\x32$.search_engine.Response.ContextEntry\x1aI\n\x0c\x43ontextEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12(\n\x05value\x18\x02 \x01(\x0b\x32\x19.search_engine.StringList:\x02\x38\x01\"\x1b\n\nStringList\x12\r\n\x05value\x18\x01 \x03(\t2J\n\x0cSearchEngine\x12:\n\x07Respond\x12\x14.search_engine.Query\x1a\x17.search_engine.Response\"\x00\x42\x1eZ\x1c\x65xample.com/go-backend/protob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13search_engine.proto\x12\rsearch_engine\"$\n\x05Query\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t\x12\r\n\x05model\x18\x02 \x01(\t\")\n\x08Response\x12\x0c\n\x04\x62ody\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontext\x18\x02 \x01(\t2\x8e\x01\n\x0cSearchEngine\x12:\n\x07Respond\x12\x14.search_engine.Query\x1a\x17.search_engine.Response\"\x00\x12\x42\n\rRespondStream\x12\x14.search_engine.Query\x1a\x17.search_engine.Response\"\x00\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'search_engine_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-  _globals['DESCRIPTOR']._options = None
-  _globals['DESCRIPTOR']._serialized_options = b'Z\034example.com/go-backend/proto'
-  _globals['_RESPONSE_CONTEXTENTRY']._options = None
-  _globals['_RESPONSE_CONTEXTENTRY']._serialized_options = b'8\001'
+  DESCRIPTOR._options = None
   _globals['_QUERY']._serialized_start=38
   _globals['_QUERY']._serialized_end=74
-  _globals['_RESPONSE']._serialized_start=77
-  _globals['_RESPONSE']._serialized_end=231
-  _globals['_RESPONSE_CONTEXTENTRY']._serialized_start=158
-  _globals['_RESPONSE_CONTEXTENTRY']._serialized_end=231
-  _globals['_STRINGLIST']._serialized_start=233
-  _globals['_STRINGLIST']._serialized_end=260
-  _globals['_SEARCHENGINE']._serialized_start=262
-  _globals['_SEARCHENGINE']._serialized_end=336
+  _globals['_RESPONSE']._serialized_start=76
+  _globals['_RESPONSE']._serialized_end=117
+  _globals['_SEARCHENGINE']._serialized_start=120
+  _globals['_SEARCHENGINE']._serialized_end=262
 # @@protoc_insertion_point(module_scope)
