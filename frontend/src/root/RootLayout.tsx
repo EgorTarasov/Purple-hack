@@ -7,7 +7,7 @@ const RootLayout = () => {
       <TopBar />
       {/* <LeftSideBar /> */}
 
-      <section className="h-[calc(100vh-88px)]">
+      <section className="h-[calc(100vh-88px)] lg:max-w-[1400px] mx-auto">
         <Outlet />
       </section>
 

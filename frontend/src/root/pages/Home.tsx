@@ -4,7 +4,7 @@ import BgLines from "@/components/widgets/BgLines";
 const Home = () => {
 	return (
 		<>
-			<div className="flex justify-center items-center relative z-50 p-20">
+			<div className="h-full flex justify-center items-center relative z-50 p-2">
 				<WelcomeBlock />
 			</div>
 			<BgLines />

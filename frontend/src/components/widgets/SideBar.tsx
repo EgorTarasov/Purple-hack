@@ -20,13 +20,13 @@ export default function SideBar() {
 	}
 
 	return (
-		<div className="border-r p-4 border-border-color w-[350px]">
+		<div className="border-r p-4 border-border-color w-[300px]">
 			<Button className="w-[100%] mb-2 bg-border-color" onClick={handleNewChat}>
 				Новый чат
 			</Button>
 			<ScrollArea className="h-[calc(100vh-200px)]">
 				<div className="my-4">Мои чаты</div>
-				<Button variant="secondary" className="w-full p-2 mb-2" key={id}>
+				<Button variant="secondary" className="max-w-full p-2 mb-2" key={id}>
 					{id}
 				</Button>
 			</ScrollArea>

@@ -9,8 +9,7 @@ const Chat = () => {
 	const { id } = useParams<{ id: string }>();
 	const [selectedModel, setSelectedModel] = useState<string>("llama");
 
-	useEffect(() => {
-	}, [selectedModel]);
+	useEffect(() => {}, [selectedModel]);
 
 	const handleModelSelectChange = (value: string) => {
 		setSelectedModel(value);
@@ -18,13 +17,17 @@ const Chat = () => {
 
 	return (
 		<>
-			<div className="flex justify-normal">
+			<div className="flex justify-between">
 				<SideBar />
-				<div className="ml-2 pt-4">
+				<div className="w-[180px] ml-2 pt-4">
 					<ModelSelect onSelectChange={handleModelSelectChange} />
 				</div>
 				{id && (
-					<WebsocketProvider socketUuid={id} messageListDefault={[]} modelType={selectedModel}>
+					<WebsocketProvider
+						socketUuid={id}
+						messageListDefault={[]}
+						modelType={selectedModel}
+					>
 						<ChatArea />
 					</WebsocketProvider>
 				)}
