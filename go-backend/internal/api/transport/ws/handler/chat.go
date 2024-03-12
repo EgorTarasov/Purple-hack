@@ -156,7 +156,7 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			case err = <-errCh:
 				logger.Errorf("sending error: %v", err)
 				if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamError)); err != nil {
-					status = "failed to get grpc stream result"
+					status = "failed to write grpc stream error"
 					logger.Errorf("%s: %v", status, err)
 					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
 						logger.Error(err)
