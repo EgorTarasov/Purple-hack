@@ -14,6 +14,7 @@ export interface IMessage {
     senderChat: boolean; 
     data: string;
     time: string;
+    error: boolean;
 }
 
 export interface ISession {

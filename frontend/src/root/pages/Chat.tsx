@@ -20,10 +20,6 @@ const Chat = () => {
 	return (
 		<>
 			<div className="h-full flex justify-between bg-white">
-				{/* <SideBar />
-				<div className="w-[180px] ml-2 pt-4">
-					<ModelSelect onSelectChange={handleModelSelectChange} />
-				</div> */}
 				{id && (
 					<WebsocketProvider
 						socketUuid={id}
@@ -41,17 +37,6 @@ const Chat = () => {
 							<ChatArea />
 						</div>
 					</WebsocketProvider>
-					// <WebsocketProvider
-					// 	socketUuid={id}
-					// 	messageListDefault={[]}
-					// 	modelType={selectedModel}
-					// >
-					// 	<SideBar />
-					// 	<div className="w-[180px] ml-2 pt-4">
-					// 		<ModelSelect onSelectChange={handleModelSelectChange} />
-					// 	</div>
-					// 	<ChatArea />
-					// </WebsocketProvider>
 				)}
 			</div>
 		</>

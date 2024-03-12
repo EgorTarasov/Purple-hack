@@ -7,10 +7,10 @@ import { AuthProvider } from "./context/Authprovider.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<BrowserRouter>
-		<React.StrictMode>
+		{/* <React.StrictMode> */}
 			<AuthProvider>
 				<App />
 			</AuthProvider>
-		</React.StrictMode>
+		{/* </React.StrictMode> */}
 	</BrowserRouter>
 );
