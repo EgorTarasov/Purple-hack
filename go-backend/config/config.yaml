@@ -1,7 +1,7 @@
 server:
   port: 9999
   logLevel: "debug"
-  corsOrigins: "http://localhost:3000"
+  corsOrigins: "http://localhost:5173"
 
 postgres:
   user: "pguser"
