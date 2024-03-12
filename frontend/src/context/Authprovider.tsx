@@ -1,36 +1,122 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { IMessage, IQuery, IResponses, ISession } from "@/models";
+import {
+	createContext,
+	useContext,
+	useState,
+	ReactNode,
+	useEffect,
+} from "react";
 
 interface AuthContextProps {
 	isAuthorized: boolean;
 	setIsAuthorized: React.Dispatch<React.SetStateAction<boolean>>;
+	userSessions: ISession[];
+	setUserSessions: React.Dispatch<React.SetStateAction<ISession[]>>;
+	messageHistoryLists: IMessage[][];
+	setMessageHistoryLists: React.Dispatch<React.SetStateAction<IMessage[][]>>;
+	messageHistoryListCurrent: IMessage[];
+	setMessageHistoryListCurrent: React.Dispatch<React.SetStateAction<IMessage[]>>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
 	isAuthorized: false,
 	setIsAuthorized: () => {},
+	userSessions: [],
+	setUserSessions: () => {},
+	messageHistoryLists: [],
+	setMessageHistoryLists: () => {},
+	messageHistoryListCurrent: [],
+	setMessageHistoryListCurrent: () => {},
 });
 
 function getCookie(name: string): string {
 	const nameLenPlus = name.length + 1;
-	return (
-		document.cookie
-			.split(";")
-			.map((c) => c.trim())
-			.filter((cookie) => {
-				return cookie.substring(0, nameLenPlus) === `${name}=`;
-			})[0]
-			// .map((cookie) => {
-			// 	return decodeURIComponent(cookie.substring(nameLenPlus));
-			// })[0]
-	);
+	return document.cookie
+		.split(";")
+		.map((c) => c.trim())
+		.filter((cookie) => {
+			return cookie.substring(0, nameLenPlus) === `${name}=`;
+		})[0];
+	// .map((cookie) => {
+	// 	return decodeURIComponent(cookie.substring(nameLenPlus));
+	// })[0]
 }
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [isAuthorized, setIsAuthorized] = useState<boolean>(getCookie("auth") !== undefined);
-	const value = { isAuthorized, setIsAuthorized };
+	const [isAuthorized, setIsAuthorized] = useState<boolean>(
+		getCookie("auth") !== undefined
+	);
+	const [userSessions, setUserSessions] = useState<ISession[]>([]);
+	const [messageHistoryLists, setMessageHistoryLists] = useState<IMessage[][]>(
+		[]
+	);
+	const [messageHistoryListCurrent, setMessageHistoryListCurrent] = useState<
+		IMessage[]
+	>([]);
+	const value = {
+		isAuthorized,
+		setIsAuthorized,
+		userSessions,
+		setUserSessions,
+		messageHistoryLists,
+		setMessageHistoryLists,
+		messageHistoryListCurrent,
+		setMessageHistoryListCurrent,
+	};
 
 	useEffect(() => {
-        setIsAuthorized(getCookie("auth") !== undefined);
-    }, [])
+		setIsAuthorized(getCookie("auth") !== undefined);
+	}, []);
+
+	useEffect(() => {
+		if (isAuthorized) {
+			try {
+				//get sessions
+
+				if (userSessions) {
+					const newMessageLists: IMessage[][] = [];
+					userSessions.map((session) => {
+						const newMessageList: IMessage[] = session.queries.flatMap(
+							(query: IQuery, index: number) => {
+								const response: IResponses = session.responses[index];
+								return [
+									{
+										id: query.id.toString(),
+										senderChat: false,
+										data: query.body,
+										time: query.createdAt.toISOString(),
+										error: false,
+									},
+									{
+										id: response.id.toString(),
+										senderChat: true,
+										data: response.body,
+										time: response.createdAt.toISOString(),
+										error: false,
+									},
+								];
+							}
+						);
+						newMessageLists.push(newMessageList);
+					});
+					setMessageHistoryLists(newMessageLists);
+				}
+
+				// const session = await ApiAuth.loginUser({
+				// 	email: values.email,
+				// 	password: values.password,
+				// });
+				// console.log("resp", session);
+				// form.reset();
+				// setIsAuthorized(true);
+				// return true;
+			} catch (error) {
+				// return toast({
+				// 	title: "Ошибка авторизации. Попробуйте снова",
+				// 	variant: "destructive",
+				// });
+			}
+		}
+	}, [isAuthorized]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
