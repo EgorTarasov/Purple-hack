@@ -1,4 +1,5 @@
 import { IMessage, IQuery, IResponses, ISession } from "@/models";
+import ApiSession from "@/services/apiSession";
 import {
 	createContext,
 	useContext,
@@ -68,54 +69,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	useEffect(() => {
-		if (isAuthorized) {
-			try {
-				//get sessions
-
-				if (userSessions) {
-					const newMessageLists: IMessage[][] = [];
-					userSessions.map((session) => {
-						const newMessageList: IMessage[] = session.queries.flatMap(
-							(query: IQuery, index: number) => {
-								const response: IResponses = session.responses[index];
-								return [
-									{
-										id: query.id.toString(),
-										senderChat: false,
-										data: query.body,
-										time: query.createdAt.toISOString(),
-										error: false,
-									},
-									{
-										id: response.id.toString(),
-										senderChat: true,
-										data: response.body,
-										time: response.createdAt.toISOString(),
-										error: false,
-									},
-								];
-							}
-						);
-						newMessageLists.push(newMessageList);
-					});
-					setMessageHistoryLists(newMessageLists);
+		async function fetchData() {
+			if (isAuthorized) {
+				try {
+					// Получение сессий
+					const sessions = await ApiSession.getUserSession();
+					setUserSessions(sessions.data);
+	
+					if (userSessions) {
+						const newMessageLists: IMessage[][] = [];
+						userSessions.map((session) => {
+							const newMessageList: IMessage[] = session.queries.flatMap(
+								(query: IQuery, index: number) => {
+									const response: IResponses = session.responses[index];
+									return [
+										{
+											id: query.id.toString(),
+											senderChat: false,
+											data: query.body,
+											time: query.createdAt.toISOString(),
+											error: false,
+										},
+										{
+											id: response.id.toString(),
+											senderChat: true,
+											data: response.body,
+											time: response.createdAt.toISOString(),
+											error: false,
+										},
+									];
+								}
+							);
+							newMessageLists.push(newMessageList);
+						});
+						setMessageHistoryLists(newMessageLists);
+					}
+				} catch (error) {
+					console.log(error)
 				}
-
-				// const session = await ApiAuth.loginUser({
-				// 	email: values.email,
-				// 	password: values.password,
-				// });
-				// console.log("resp", session);
-				// form.reset();
-				// setIsAuthorized(true);
-				// return true;
-			} catch (error) {
-				// return toast({
-				// 	title: "Ошибка авторизации. Попробуйте снова",
-				// 	variant: "destructive",
-				// });
 			}
 		}
+	
+		fetchData();
 	}, [isAuthorized]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
