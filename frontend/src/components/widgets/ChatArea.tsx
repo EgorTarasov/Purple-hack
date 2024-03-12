@@ -17,7 +17,6 @@ function ChatArea() {
 
 	const [currentMessage, setCurrentMessage] = useState("");
 	const [isStreamStarted, setIsStreamStarted] = useState(false);
-	const [isStreamError, setIsStreamError] = useState(false);
 
 	function convertTime() {
 		let hours = String(new Date(Date.now()).getHours());
@@ -46,6 +45,11 @@ function ChatArea() {
 		}
 	};
 
+	const sendCancel = async () => {
+		send(streamIndicator.cancel)
+		setIsStreamStarted(false);
+	};
+
 	useEffect(() => {
 		function mutateMessageList(index: number, val: string, error: boolean) {
 			const newMessageList: IMessage[] = messageList.map((currentMessage, i) => {
@@ -71,8 +75,6 @@ function ChatArea() {
 
 
 		if (!isStreamStarted && val !== "" && val !== streamIndicator.error && val !== streamIndicator.finished) {
-			console.log("first entry")
-			console.log("val", val)
 			messageData = {
 				data: val,
 				time: convertTime(),
@@ -81,26 +83,17 @@ function ChatArea() {
 				error: false,
 			};
 			setMessageList((list) => [...list, messageData]);
-			console.log(messageData)
-			console.log(messageList)
-
-			// setCurrentMessageStream((prev) => (prev += val));
 			setIsStreamStarted(true);
-			setIsStreamError(false);
 		}
 		else if (isStreamStarted && val !== streamIndicator.error && val !== streamIndicator.finished) {
 			mutateMessageList(messageList.length - 1, val, false);
 		}
 		else if(isStreamStarted && val === streamIndicator.error){
 			setIsStreamStarted(false);
-			setIsStreamError(true);
-			console.log('error', val)
-			console.log('message', messageList)
 			mutateMessageList(messageList.length - 1, "", true);
 		}
 		else if(isStreamStarted && val === streamIndicator.finished){
 			setIsStreamStarted(false);
-			setIsStreamError(false);
 			mutateMessageList(messageList.length - 1, "", false);
 		}
 		else if(!isStreamStarted && val === streamIndicator.error){
@@ -111,7 +104,6 @@ function ChatArea() {
 				id: uuid(),
 				error: true,
 			};
-			setIsStreamError(true);
 			setMessageList((list) => [...list, messageData]);
 		}
 	}, [val]);
@@ -152,19 +144,28 @@ function ChatArea() {
 						onKeyDown={(event) => {
 							if (event.key === "Enter" && event.ctrlKey) sendMessage();
 						}}
+						disabled={isStreamStarted}
 					/>
 					<div className="flex items-center">
 						<p>
 							{lengthSymbols}/{maxLengthSymbols}
 						</p>
-						<Button
+						{!isStreamStarted && <Button
 							type="button"
 							onClick={sendMessage}
 							size="sm"
 							className="ml-auto"
 						>
 							Отправить
-						</Button>
+						</Button>}
+						{isStreamStarted && <Button
+							type="button"
+							onClick={sendCancel}
+							size="sm"
+							className="ml-auto"
+						>
+							Отменить генерацию ответа
+						</Button>}
 					</div>
 				</div>
 			</form>
