@@ -39,7 +39,7 @@ export default function CreateAccountDialog() {
 								</div>
 							</CardContent>
 							<CardFooter>
-								<Button className="w-full" onClick={()=>{setIsAuthorized(true)}}>Войти</Button>
+								<Button className="w-full">Войти</Button>
 							</CardFooter>
 						</Card>
 					</DialogContent>

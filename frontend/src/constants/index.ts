@@ -8,3 +8,9 @@ export const topBarLinks = [
         label: "Чат",
     },
 ]
+
+export const streamIndicator = {
+    error: "[stream error]",
+    finished: "[stream finished]",
+    cancel: "[stream cancel]"
+}

@@ -135,9 +135,6 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			if err != nil {
 				status = "failed to get response from searchEngine"
 				logger.Errorf("%s: %v", status, err)
-				if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-					logger.Error(err)
-				}
 				errCh <- err
 				return
 			}
@@ -146,9 +143,6 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			if err != nil {
 				status = "failed to create response"
 				logger.Errorf("%s: %v", status, err)
-				if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-					logger.Error(err)
-				}
 				errCh <- err
 				return
 			}
@@ -160,6 +154,7 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 		for {
 			select {
 			case err = <-errCh:
+				logger.Errorf("sending error: %v", err)
 				if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamError)); err != nil {
 					status = "failed to get grpc stream result"
 					logger.Errorf("%s: %v", status, err)
@@ -189,14 +184,15 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 				}
 				break ReceiveStream
 			case respCtx = <-ctxCh:
-				if err = c.WriteMessage(websocket.TextMessage, []byte(respCtx)); err != nil {
-					status = "failed to write message"
-					logger.Errorf("%s: %v", status, err)
-					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-						logger.Error(err)
-					}
-					break ReceiveStream
-				}
+				_ = respCtx
+				//if err = c.WriteMessage(websocket.TextMessage, []byte(respCtx)); err != nil {
+				//	status = "failed to write message"
+				//	logger.Errorf("%s: %v", status, err)
+				//	if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
+				//		logger.Error(err)
+				//	}
+				//	break ReceiveStream
+				//}
 			case respBody = <-bodyCh:
 				if err = c.WriteMessage(websocket.TextMessage, []byte(respBody)); err != nil {
 					status = "failed to write message"

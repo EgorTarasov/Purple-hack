@@ -23,6 +23,7 @@ const Message = ({ message }: IMessageProps) => {
 						<div className="ml-2 mt-0.7">{message.time}</div>
 					</div>
 					<pre style={{ wordBreak: "break-all", maxWidth: '100%', whiteSpace: 'pre-wrap' }}>{message.data}</pre>
+					{message.error && <pre style={{ wordBreak: "break-all", maxWidth: '100%', whiteSpace: 'pre-wrap' }} className="bg-[#FF4940] p-1 rounded-md border">Произошла ошибка генерации, пожалуйста, повторите запрос</pre>}
 				</div>
 			</div>
 		</div>

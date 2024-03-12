@@ -9,6 +9,7 @@ import {
 	useRef,
 	useState,
 } from "react";
+import { WS_BASE_URL } from "@/config";
 
 export type WebsocketContextType = [
 	IMessage[],
@@ -48,7 +49,7 @@ export const WebsocketProvider = ({
 	useEffect(() => {
 		setMessageList([]);
 		const socket = new WebSocket(
-			`wss://echo.websocket.events/${socketUuid}?model=${modelType}`
+			`${WS_BASE_URL}/session/${socketUuid}?model=${modelType}`
 		);
 
 		socket.onopen = () => setIsReady(true);

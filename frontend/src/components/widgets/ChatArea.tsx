@@ -3,20 +3,21 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import Message from "../entities/Message";
-import {
-	WebsocketContextType,
-	useWS,
-} from "@/context/WebSocketProvider";
+import { WebsocketContextType, useWS } from "@/context/WebSocketProvider";
 import { IMessage } from "@/models";
 import uuid from "react-uuid";
+import { streamIndicator } from "../../constants";
 
 function ChatArea() {
 	const maxLengthSymbols = 5000;
 	const [lengthSymbols, setLengthSymbols] = useState(0);
 
-	const [messageList, setMessageList, ready, val, send]: WebsocketContextType = useWS();
+	const [messageList, setMessageList, ready, val, send]: WebsocketContextType =
+		useWS();
 
 	const [currentMessage, setCurrentMessage] = useState("");
+	const [isStreamStarted, setIsStreamStarted] = useState(false);
+	const [isStreamError, setIsStreamError] = useState(false);
 
 	function convertTime() {
 		let hours = String(new Date(Date.now()).getHours());
@@ -33,6 +34,7 @@ function ChatArea() {
 				time: convertTime(),
 				senderChat: false,
 				id: uuid(),
+				error: false,
 			};
 
 			if (ready) {
@@ -45,14 +47,74 @@ function ChatArea() {
 	};
 
 	useEffect(() => {
-		const messageData: IMessage = {
-			data: val,
+		function mutateMessageList(index: number, val: string, error: boolean) {
+			const newMessageList: IMessage[] = messageList.map((currentMessage, i) => {
+				if (i === index) {
+					const newMessage = currentMessage;
+					newMessage.data += val;
+					newMessage.error = error;
+					return newMessage
+				} else {
+					return currentMessage;
+				}
+			});
+			setMessageList(newMessageList);
+		}
+
+		let messageData: IMessage = {
+			data: "",
 			time: convertTime(),
 			senderChat: true,
 			id: uuid(),
+			error: false,
 		};
-		setMessageList((list) => [...list, messageData]);
-	}, [val, setMessageList]);
+
+
+		if (!isStreamStarted && val !== "" && val !== streamIndicator.error && val !== streamIndicator.finished) {
+			console.log("first entry")
+			console.log("val", val)
+			messageData = {
+				data: val,
+				time: convertTime(),
+				senderChat: true,
+				id: uuid(),
+				error: false,
+			};
+			setMessageList((list) => [...list, messageData]);
+			console.log(messageData)
+			console.log(messageList)
+
+			// setCurrentMessageStream((prev) => (prev += val));
+			setIsStreamStarted(true);
+			setIsStreamError(false);
+		}
+		else if (isStreamStarted && val !== streamIndicator.error && val !== streamIndicator.finished) {
+			mutateMessageList(messageList.length - 1, val, false);
+		}
+		else if(isStreamStarted && val === streamIndicator.error){
+			setIsStreamStarted(false);
+			setIsStreamError(true);
+			console.log('error', val)
+			console.log('message', messageList)
+			mutateMessageList(messageList.length - 1, "", true);
+		}
+		else if(isStreamStarted && val === streamIndicator.finished){
+			setIsStreamStarted(false);
+			setIsStreamError(false);
+			mutateMessageList(messageList.length - 1, "", false);
+		}
+		else if(!isStreamStarted && val === streamIndicator.error){
+			messageData = {
+				data: "",
+				time: convertTime(),
+				senderChat: true,
+				id: uuid(),
+				error: true,
+			};
+			setIsStreamError(true);
+			setMessageList((list) => [...list, messageData]);
+		}
+	}, [val]);
 
 	const scrollRef = useRef<HTMLDivElement>(null);
 
