@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface AuthContextProps {
 	isAuthorized: boolean;
@@ -6,7 +6,7 @@ interface AuthContextProps {
 }
 
 const AuthContext = createContext<AuthContextProps>({
-	isAuthorized: getCookie("auth") !== "",
+	isAuthorized: false,
 	setIsAuthorized: () => {},
 });
 
@@ -18,15 +18,19 @@ function getCookie(name: string): string {
 			.map((c) => c.trim())
 			.filter((cookie) => {
 				return cookie.substring(0, nameLenPlus) === `${name}=`;
-			})
-			.map((cookie) => {
-				return decodeURIComponent(cookie.substring(nameLenPlus));
 			})[0]
+			// .map((cookie) => {
+			// 	return decodeURIComponent(cookie.substring(nameLenPlus));
+			// })[0]
 	);
 }
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [isAuthorized, setIsAuthorized] = useState<boolean>(getCookie("auth") !== "");
+	const [isAuthorized, setIsAuthorized] = useState<boolean>(getCookie("auth") !== undefined);
 	const value = { isAuthorized, setIsAuthorized };
+
+	useEffect(() => {
+        setIsAuthorized(getCookie("auth") !== undefined);
+    }, [])
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
