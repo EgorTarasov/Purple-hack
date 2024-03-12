@@ -74,3 +74,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+textarea {
+  resize: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

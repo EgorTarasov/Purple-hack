@@ -186,8 +186,8 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
 						logger.Error(err)
 					}
-					break ReceiveStream
 				}
+				break ReceiveStream
 			case respCtx = <-ctxCh:
 				if err = c.WriteMessage(websocket.TextMessage, []byte(respCtx)); err != nil {
 					status = "failed to write message"
@@ -208,7 +208,7 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 				}
 			}
 		}
-
+		logger.Info("stream finished")
 		if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamFinished)); err != nil {
 			status = "failed to write message"
 			logger.Errorf("%s: %v", status, err)
