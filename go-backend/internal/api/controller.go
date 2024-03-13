@@ -24,7 +24,7 @@ type ResponseController interface {
 	Respond(ctx context.Context, params domain.Query, sessionId uuid.UUID) (domain.ResponseCreate, error)
 	RespondStream(
 		ctx context.Context, params domain.Query, sessionId uuid.UUID,
-		ctxCh, bodyCh chan<- string,
+		ctxCh, bodyCh chan<- string, cancelCh <-chan int,
 	) (domain.ResponseCreate, error)
 	FindMany(ctx context.Context, sessionId uuid.UUID) ([]domain.Response, error)
 }

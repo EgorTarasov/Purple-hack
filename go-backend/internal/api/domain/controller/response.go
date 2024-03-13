@@ -85,7 +85,7 @@ func (rc *ResponseController) Respond(ctx context.Context, params domain.Query, 
 
 func (rc *ResponseController) RespondStream(
 	ctx context.Context, params domain.Query, sessionId uuid.UUID,
-	ctxCh, bodyCh chan<- string,
+	ctxCh, bodyCh chan<- string, cancelCh <-chan int,
 ) (domain.ResponseCreate, error) {
 	var (
 		tmp         string
@@ -97,31 +97,40 @@ func (rc *ResponseController) RespondStream(
 		respContext string
 	)
 
+	withCancel, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	in := protos.Query{
 		Body:  params.Body,
 		Model: params.Model,
 	}
-	stream, err = rc.seClient.RespondStream(ctx, &in)
+	stream, err = rc.seClient.RespondStream(withCancel, &in)
 	if err != nil {
 		return resp, err
 	}
 
+reading:
 	for {
-		respGrpc, err = stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return resp, err
-		}
-		logger.Debugf("got from stream: %s", respGrpc.String())
-		if tmp = respGrpc.GetBody(); tmp != "" {
-			respBody += tmp
-			bodyCh <- tmp
-		}
-		if tmp = respGrpc.GetContext(); tmp != "" {
-			respContext += tmp
-			ctxCh <- tmp
+		select {
+		case <-cancelCh:
+			cancel()
+		default:
+			respGrpc, err = stream.Recv()
+			if err == io.EOF {
+				break reading
+			}
+			if err != nil {
+				return resp, err
+			}
+			logger.Debugf("got from stream: %s", respGrpc.String())
+			if tmp = respGrpc.GetBody(); tmp != "" {
+				respBody += tmp
+				bodyCh <- tmp
+			}
+			if tmp = respGrpc.GetContext(); tmp != "" {
+				respContext += tmp
+				ctxCh <- tmp
+			}
 		}
 	}
 

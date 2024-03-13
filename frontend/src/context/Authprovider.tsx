@@ -33,6 +33,7 @@ const AuthContext = createContext<AuthContextProps>({
 
 function getCookie(name: string): string {
 	const nameLenPlus = name.length + 1;
+	console.log(document.cookie)
 	return document.cookie
 		.split(";")
 		.map((c) => c.trim())

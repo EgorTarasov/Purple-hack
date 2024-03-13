@@ -47,7 +47,7 @@ function ChatArea() {
 
 	const sendCancel = async () => {
 		send(streamIndicator.cancel)
-		setIsStreamStarted(false);
+		// setIsStreamStarted(false);
 	};
 
 	useEffect(() => {

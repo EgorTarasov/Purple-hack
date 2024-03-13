@@ -58,7 +58,7 @@ func (h *AuthHandler) Login(ctx *fiber.Ctx) error {
 		Path:     "/",
 		MaxAge:   int((time.Hour * 12).Seconds()),
 		Expires:  pkg.GetLocalTime().Add(time.Hour * 12),
-		Secure:   true,
+		Secure:   false,
 		HTTPOnly: false,
 	})
 

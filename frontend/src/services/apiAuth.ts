@@ -12,8 +12,7 @@ const ApiAuth = {
         const response = await axios.post(
             `${BASE_URL}/auth/login`,
             data
-        );
-        
+    );
         // const response = await axios.post(`${BASE_URL}/auth/login`, data);
         return response;
     },

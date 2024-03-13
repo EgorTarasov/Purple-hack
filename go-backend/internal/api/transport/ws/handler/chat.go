@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"strconv"
 
 	"purple/internal/api"
@@ -13,6 +12,8 @@ import (
 	"github.com/gofiber/contrib/websocket"
 	"github.com/google/uuid"
 	"github.com/yogenyslav/logger"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type ChatHandler struct {
@@ -33,24 +34,25 @@ func NewChatHandler(sc api.SessionController, qc api.QueryController, rc api.Res
 
 func (h *ChatHandler) Chat(c *websocket.Conn) {
 	var (
-		mt          int
-		msg         []byte
-		err         error
-		status      string
-		respCreate  domain.ResponseCreate
-		queryCreate domain.QueryCreate
-		query       domain.Query
-		resp        domain.Response
-		respCtx     string
-		respBody    string
-		data        []byte
-		sessionId   uuid.UUID
-		userId      int64
-		ctx         = context.Background()
-		ctxCh       = make(chan string, 1)
-		bodyCh      = make(chan string)
-		errCh       = make(chan error, 1)
-		respCh      = make(chan domain.Response, 1)
+		mt             int
+		msg            []byte
+		err            error
+		responseStatus string
+		respCreate     domain.ResponseCreate
+		queryCreate    domain.QueryCreate
+		query          domain.Query
+		resp           domain.Response
+		respCtx        string
+		respBody       string
+		sessionId      uuid.UUID
+		userId         int64
+		data           []byte
+		ctx            = context.Background()
+		ctxCh          = make(chan string, 1)
+		bodyCh         = make(chan string)
+		errCh          = make(chan error, 1)
+		cancelCh       = make(chan int)
+		respCh         = make(chan domain.Response, 1)
 	)
 
 	defer func() {
@@ -81,6 +83,11 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			}
 		}
 
+		if string(msg) == response.StreamCancel {
+			cancelCh <- 1
+			continue
+		}
+
 		sessionId, err = uuid.Parse(c.Params("id"))
 		if err != nil {
 			logger.Errorf("%v: %v", shared.ErrSessionIdInvalid, err)
@@ -94,9 +101,9 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 		userId, err = strconv.ParseInt(c.Cookies("auth"), 10, 64)
 		if err == nil {
 			if err = h.userController.SaveSession(ctx, userId, sessionId); err != nil {
-				status = "failed to save session"
-				logger.Errorf("%s: %v", status, err)
-				if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
+				responseStatus = "failed to save session"
+				logger.Errorf("%s: %v", responseStatus, err)
+				if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
 					logger.Error(err)
 					break
 				}
@@ -105,9 +112,9 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 		}
 
 		if err = h.sessionController.InsertOne(ctx, sessionId); err != nil {
-			status = "failed to create session"
-			logger.Errorf("%s: %v", status, err)
-			if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
+			responseStatus = "failed to create session"
+			logger.Errorf("%s: %v", responseStatus, err)
+			if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
 				logger.Error(err)
 				break
 			}
@@ -122,29 +129,28 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 		}
 		query, err = h.queryController.InsertOne(ctx, queryCreate)
 		if err != nil {
-			status = "failed to create query"
-			logger.Errorf("%s: %v", status, err)
-			if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
+			responseStatus = "failed to create query"
+			logger.Errorf("%s: %v", responseStatus, err)
+			if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
 				logger.Error(err)
 				break
 			}
 			break
 		}
 
-		// TODO: replace context to WithCancel in order to cancel grpc streaming
 		go func() {
-			respCreate, err = h.responseController.RespondStream(ctx, query, sessionId, ctxCh, bodyCh)
+			respCreate, err = h.responseController.RespondStream(ctx, query, sessionId, ctxCh, bodyCh, cancelCh)
 			if err != nil {
-				status = "failed to get response from searchEngine"
-				logger.Errorf("%s: %v", status, err)
+				logger.Info("failed to get response from searchEngine")
+				logger.Error(err)
 				errCh <- err
 				return
 			}
 
 			resp, err = h.responseController.InsertOne(ctx, respCreate)
 			if err != nil {
-				status = "failed to create response"
-				logger.Errorf("%s: %v", status, err)
+				logger.Info("failed to create response")
+				logger.Error(err)
 				errCh <- err
 				return
 			}
@@ -152,68 +158,60 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 			respCh <- resp
 		}()
 
-	ReceiveStream:
-		for {
-			select {
-			case err = <-errCh:
-				logger.Errorf("sending error: %v", err)
-				if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamError)); err != nil {
-					status = "failed to write grpc stream error"
-					logger.Errorf("%s: %v", status, err)
-					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-						logger.Error(err)
-					}
-					break ReceiveStream
-				}
-			case resp = <-respCh:
-				logger.Infof("final resp: %v", resp)
-				data, err = json.Marshal(resp)
-				if err != nil {
-					status = "failed to marshal resp"
-					logger.Errorf("%s: %v", status, err)
-					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-						logger.Error(err)
-					}
-					break ReceiveStream
-				}
+		go func() {
+		ReceiveStream:
+			for {
+				select {
+				case streamErr := <-errCh:
+					data = []byte(response.StreamError)
 
-				if err = c.WriteMessage(websocket.TextMessage, data); err != nil {
-					status = "failed to write message"
-					logger.Errorf("%s: %v", status, err)
-					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-						logger.Error(err)
+					grpcErr := status.Convert(streamErr)
+					if grpcErr.Code() == codes.Canceled {
+						logger.Info("stream canceled")
+						data = []byte(response.StreamFinished)
 					}
-				}
-				break ReceiveStream
-			case respCtx = <-ctxCh:
-				_ = respCtx
-				//if err = c.WriteMessage(websocket.TextMessage, []byte(respCtx)); err != nil {
-				//	status = "failed to write message"
-				//	logger.Errorf("%s: %v", status, err)
-				//	if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-				//		logger.Error(err)
-				//	}
-				//	break ReceiveStream
-				//}
-			case respBody = <-bodyCh:
-				if err = c.WriteMessage(websocket.TextMessage, []byte(respBody)); err != nil {
-					status = "failed to write message"
-					logger.Errorf("%s: %v", status, err)
-					if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-						logger.Error(err)
+
+					logger.Infof("sending error: %v with data %s", streamErr, data)
+					if err = c.WriteMessage(websocket.TextMessage, data); err != nil {
+						responseStatus = "failed to write grpc stream error"
+						logger.Errorf("%s: %v", responseStatus, err)
+						if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
+							logger.Error(err)
+						}
 					}
+					return
+				case resp = <-respCh:
+					logger.Infof("final resp: %v", resp)
 					break ReceiveStream
+				case respCtx = <-ctxCh:
+					_ = respCtx
+					//if err = c.WriteMessage(websocket.TextMessage, []byte(respCtx)); err != nil {
+					//	responseStatus = "failed to write message"
+					//	logger.Errorf("%s: %v", responseStatus, err)
+					//	if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
+					//		logger.Error(err)
+					//	}
+					//	break ReceiveStream
+					//}
+				case respBody = <-bodyCh:
+					if err = c.WriteMessage(websocket.TextMessage, []byte(respBody)); err != nil {
+						responseStatus = "failed to write message"
+						logger.Errorf("%s: %v", responseStatus, err)
+						if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
+							logger.Error(err)
+						}
+						break ReceiveStream
+					}
 				}
 			}
-		}
-		logger.Info("stream finished")
-		if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamFinished)); err != nil {
-			status = "failed to write message"
-			logger.Errorf("%s: %v", status, err)
-			if err = c.WriteMessage(websocket.CloseMessage, []byte(status)); err != nil {
-				logger.Error(err)
+			logger.Info("stream finished")
+			if err = c.WriteMessage(websocket.TextMessage, []byte(response.StreamFinished)); err != nil {
+				responseStatus = "failed to write message"
+				logger.Errorf("%s: %v", responseStatus, err)
+				if err = c.WriteMessage(websocket.CloseMessage, []byte(responseStatus)); err != nil {
+					logger.Error(err)
+				}
 			}
-			break
-		}
+		}()
 	}
 }
