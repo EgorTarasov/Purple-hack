@@ -1,0 +1,12 @@
+pip
+prompt-toolkit
+psutil
+ptyprocess
+pure-eval
+Pygments
+pyzmq
+setuptools
+six
+tornado
+traitlets
+wcwidth

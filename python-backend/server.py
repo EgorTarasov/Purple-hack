@@ -25,10 +25,10 @@ from grpc import ServicerContext, server
 class DataLoader:
 
     def __init__(
-            self,
-            mongo_con: str,
-            pg_con: str,
-            collection_name: str = "ml_docs",
+        self,
+        mongo_con: str,
+        pg_con: str,
+        collection_name: str = "ml_docs",
     ) -> None:
 
         self.mongo = MongoClient(mongo_con)
@@ -115,9 +115,9 @@ Question: {question} на русском языке.
 
         rag_chain_from_docs = (
             # RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
-                prompt
-                | self.chatOllama
-                | StrOutputParser()
+            prompt
+            | self.chatOllama
+            | StrOutputParser()
         )
         self.rag_chain_with_source = RunnableParallel(
             {

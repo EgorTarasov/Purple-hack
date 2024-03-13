@@ -10,3 +10,5 @@ pages
 data.json
 node_modules
 __pycache__
+api.purple.larek.tech.conf
+python-ml/foo.py
