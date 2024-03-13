@@ -10,6 +10,7 @@ import {
 	useState,
 } from "react";
 import { WS_BASE_URL } from "@/config";
+import storage from "@/lib/storage";
 
 export type WebsocketContextType = [
 	IMessage[],
@@ -47,22 +48,30 @@ export const WebsocketProvider = ({
 		useState<IMessage[]>(messageListDefault);
 
 	useEffect(() => {
-		setMessageList([]);
-		const socket = new WebSocket(
-			`${WS_BASE_URL}/session/${socketUuid}?model=${modelType}`
-		);
+		function openSocketConnection(){
+			setMessageList([]);
+			const socket = new WebSocket(
+				`${WS_BASE_URL}/session/${socketUuid}?model=${modelType}`
+			);
+	
+			socket.onopen = () => setIsReady(true);
+			socket.onclose = () => setIsReady(false);
+			socket.onmessage = (event) => setVal(event.data);
+	
+			ws.current = socket;
+	
+			return () => {
+				if (ws.current) {
+					ws.current.close();
+				}
+			};
+		}
 
-		socket.onopen = () => setIsReady(true);
-		socket.onclose = () => setIsReady(false);
-		socket.onmessage = (event) => setVal(event.data);
-
-		ws.current = socket;
-
-		return () => {
-			if (ws.current) {
-				ws.current.close();
-			}
-		};
+		if(socketUuid !== storage.getSocketUuid()) {
+			console.log('newconnection ', Date.now())
+			openSocketConnection();
+			storage.setSocketUuid(socketUuid);
+		}
 	}, [socketUuid, modelType]);
 
 	const sendMessage = (data: string) => {

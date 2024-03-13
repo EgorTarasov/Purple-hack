@@ -15,25 +15,26 @@ export interface IMessage {
     data: string;
     time: string;
     error: boolean;
+    sessionUuid?: string;
 }
 
 export interface ISession {
     id: string;
     queries: IQuery[];
     responses: IResponses[];
-    createdAt: Date;
+    createdAt: string;
 }
 
 export interface IQuery {
     id: number;
     model: string;
     body: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 export interface IResponses {
     id: number;
-    context: {string: string[]};
+    context: { [key: string]: string[] };
     body: string;
-    createdAt: Date;
+    createdAt: string;
 }

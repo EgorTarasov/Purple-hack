@@ -9,16 +9,34 @@ import logoPath from "../../assets/MediumLogo.svg";
 import CreateAccountDialog from "./CreateAccountDialog";
 import { useAuth } from "@/context/Authprovider";
 import { IMessage } from "@/models";
+import ApiSession from "@/services/apiSession";
+import { sessionToMessage } from "@/lib/sessionToMessage";
 
 export default function SideBar() {
 	const { id } = useParams<{ id: string }>();
 
 	const navigate = useNavigate();
 	const { toast } = useToast();
-	const { isAuthorized, messageHistoryLists, setMessageHistoryListCurrent } =
+	const { isAuthorized, messageHistoryLists, setMessageHistoryListCurrent, setUserSessions, setMessageHistoryLists} =
 		useAuth();
 
 	const [messageList]: WebsocketContextType = useWS();
+
+	async function getSessions(){
+		try {
+			const sessions = await ApiSession.getUserSession();
+			setUserSessions(sessions.data);
+			console.log('newsessions', sessions.data)
+
+			if (sessions.data) {
+				const newMessageLists: IMessage[][] = sessionToMessage(sessions.data);
+				setMessageHistoryLists(newMessageLists);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+
+	}
 
 	function handleNewChat() {
 		if (!isAuthorized) {
@@ -37,11 +55,15 @@ export default function SideBar() {
 				),
 			});
 		}
+		else {
+			getSessions();
+			navigate(`/chat/${uuid()}`);
+		}
 	}
 
 	function handleHistoryChatButton(messageListParam: IMessage[]) {
 		setMessageHistoryListCurrent(messageListParam);
-		navigate(`/history/${uuid()}`);
+		navigate(`/history/${messageListParam[0].sessionUuid}`);
 	}
 
 	return (
@@ -71,7 +93,7 @@ export default function SideBar() {
 								<Button
 									variant="secondary"
 									className="w-full p-2 mb-2"
-									key={id}
+									key={messageListParam[0].id}
 									onClick={() => handleHistoryChatButton(messageListParam)}
 								>
 									{messageListParam[0].data.substring(0, 35)}

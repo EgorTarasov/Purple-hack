@@ -13,17 +13,19 @@ const ChatHistoryShared = () => {
 
 	useEffect(() => {
 		async function fetchData() {
-			try {
-				// Получение сессий
-				const sessions = await ApiSession.getUserSession();
-				const historySessions = sessions.data;
-
-				if (historySessions) {
-					const newMessageLists: IMessage[][] = sessionToMessage(historySessions);
-					setMessageSharedList(newMessageLists[0]);
+			if(id){
+				try {
+					// Получение сессий
+					const sessions = await ApiSession.getHistotySharedSession(id);
+					const historySessions = sessions.data;
+	
+					if (historySessions) {
+						const newMessageLists: IMessage[][] = sessionToMessage(historySessions);
+						setMessageSharedList(newMessageLists[0]);
+					}
+				} catch (error) {
+					console.log(error);
 				}
-			} catch (error) {
-				console.log(error);
 			}
 		}
 
