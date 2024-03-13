@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores.pgvector import PGVector
-from langchain import PromptTemplate
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
 from langchain.llms import Ollama
 from langchain.chains import RetrievalQA
 
@@ -83,21 +83,25 @@ class SearchEngingeServicer(search_engine_pb2_grpc.SearchEngineServicer):
     def __init__(self, loader: DataLoader, ollama_api: str) -> None:
         # TODO: add models params to params
         vectorstore = loader.get_store()
-        self.ollama = Ollama(base_url=ollama_api, model="llama2", temperature=0)
-        self.chatOllama = ChatOllama(base_url=ollama_api, model="llama2", temperature=0)
+        temperature = 0.5
+        self.ollama = Ollama(base_url=ollama_api, model="llama2", temperature=temperature)
+        self.chatOllama = ChatOllama(base_url=ollama_api, model="llama2", temperature=temperature)
 
         template = """Отвечай только на русском. Если пишешь на другом языке, переводи его на русской.
 Если не знаешь ответа, скажи что не знаешь ответа, не пробуй отвечать.
 Я дам тебе пять текстов, из которых надо дать ответ на поставленный вопрос.
 
-Context:
+Контекст:
 {context}
 
-Question: {question} на русском языке.
-Ответ:
+Вопрос: {question} на русском языке.
+Дай ответ на русском языке
 """
         prompt = PromptTemplate.from_template(
             template=template,
+        )
+        chat_prompt = ChatPromptTemplate.from_template(
+            template=template
         )
 
         retriever = vectorstore.as_retriever(
@@ -114,10 +118,10 @@ Question: {question} на русском языке.
             return "\n\n".join(doc.page_content for doc in docs)
 
         rag_chain_from_docs = (
-            # RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
-                prompt
-                | self.chatOllama
-                | StrOutputParser()
+            RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
+            | chat_prompt
+            | self.chatOllama
+            | StrOutputParser()
         )
         self.rag_chain_with_source = RunnableParallel(
             {
@@ -137,10 +141,10 @@ Question: {question} на русском языке.
         return Response(body=response_body, context="test context")
 
     def RespondStream(self, query: Query, ctx: ServicerContext):
-        body: str = query.body
+        body: str = ""
         model: str = query.model
 
-        for chunk in self.rag_chain_with_source.stream(body):
+        for chunk in self.rag_chain_with_source.stream(query.body):
             if "question" in chunk:
                 continue
             if "context" in chunk:

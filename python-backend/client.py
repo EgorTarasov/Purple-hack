@@ -18,17 +18,17 @@ def run():
         )
 
         # Make the call
-        # response = stub.Respond(query)
+        response = stub.Respond(query)
 
         # # Print the response
-        # print(response)
+        print(response)
 
-        responses = stub.RespondStream(query)
-
-        # # Iterate over the stream of responses
-        for response in responses:
-            # Print the response
-            print(response)
+        # responses = stub.RespondStream(query)
+        #
+        # # # Iterate over the stream of responses
+        # for response in responses:
+        #     # Print the response
+        #     print(response)
 
 
 if __name__ == "__main__":
