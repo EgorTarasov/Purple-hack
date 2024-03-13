@@ -10,3 +10,4 @@ six
 tornado
 traitlets
 wcwidth
+ollama
