@@ -54,8 +54,7 @@ Context:
             messages=[{"role": "user", "content": prompt}],
             options={"temperature": 0},
         )
-        if response["status"] != "success":  # type: ignore
-            raise Exception("ollama2 server error")
+
         return response["message"]["content"], "Ссылки:" + "\n".join([doc.metadata for doc in docs])  # type: ignore
 
     def get_stream_response(

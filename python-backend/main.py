@@ -62,6 +62,7 @@ class SearchEngingeServicer(search_engine_pb2_grpc.SearchEngineServicer):
         self, query: Query, ctx: ServicerContext
     ) -> Generator[Response, Any, None]:
         body: str = query.body
+        log.info(f"new request: {body}")
         model: str = query.model
         for chunk in self.service.get_stream_response(body):
             if chunk.startswith("Ссылки:"):
@@ -72,8 +73,10 @@ class SearchEngingeServicer(search_engine_pb2_grpc.SearchEngineServicer):
 
 def serve():
     s = server(futures.ThreadPoolExecutor(max_workers=10))
-    clickhouse_uri = os.getenv("CLICKHOUSE_URI")
-    ollama_uri = os.getenv("OLLAMA_URI")
+    clickhouse_uri = (
+        "clickhouse://testuser:superstrongpassword@larek.tech:65002/default"
+    )
+    ollama_uri = "http://larek.tech:11434"
     if clickhouse_uri is None:
         log.error("CLICKHOUSE_URI is not set")
         sys.exit(1)
