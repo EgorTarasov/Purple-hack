@@ -5,7 +5,7 @@ import { ISession } from "@/models";
 
 const ApiSession = {
     async getUserSession() {
-        const response = await axios.get<ISession>(
+        const response = await axios.get<ISession[]>(
             `${BASE_URL}/api/sessions/list`
         );
         

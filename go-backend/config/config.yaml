@@ -9,7 +9,7 @@ postgres:
 #  host: "pg"
   host: "localhost"
   port: 5432
-  db: "dev"
+  db: "cbr"
   ssl: false
 
 searchEngine:

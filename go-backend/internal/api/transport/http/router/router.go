@@ -8,6 +8,6 @@ import (
 
 func SetupSessionRoutes(app *fiber.App, h api.SessionHandler) {
 	sessions := app.Group("/api/sessions")
-	sessions.Get("/:id", h.FindOneById)
 	sessions.Get("/list", h.List)
+	sessions.Get("/:id", h.FindOneById)
 }
