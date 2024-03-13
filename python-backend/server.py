@@ -25,10 +25,10 @@ from grpc import ServicerContext, server
 class DataLoader:
 
     def __init__(
-            self,
-            mongo_con: str,
-            pg_con: str,
-            collection_name: str = "ml_docs",
+        self,
+        mongo_con: str,
+        pg_con: str,
+        collection_name: str = "ml_docs",
     ) -> None:
 
         self.mongo = MongoClient(mongo_con)
