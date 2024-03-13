@@ -5,8 +5,13 @@
 *.yaml
 .env
 venv
-news
-pages
+news-parser/news
+news-parser/pages
 data.json
 node_modules
 __pycache__
+faq-parser/faq-pages
+faq-parser/faq-pages-linked
+faq-parser/faq.html
+faq-parser/qa
+faq-parser/qa-linked

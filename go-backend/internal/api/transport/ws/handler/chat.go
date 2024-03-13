@@ -59,6 +59,8 @@ func (h *ChatHandler) Chat(c *websocket.Conn) {
 		}
 	}()
 
+	logger.Infof("new conn from %s", c.LocalAddr())
+
 	for {
 		mt, msg, err = c.ReadMessage()
 		if err != nil {
