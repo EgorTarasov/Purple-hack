@@ -1,10 +1,6 @@
 pymongo
-langchain
-langchain-community
-langchain-text-splitters
-psycopg2-binary
-pgvector
 grpcio
 grpcio-tools
 sentence-transformers
 clickhouse_driver
+ollama
