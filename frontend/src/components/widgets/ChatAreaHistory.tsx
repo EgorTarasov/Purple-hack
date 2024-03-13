@@ -8,7 +8,7 @@ function ChatAreaHistory() {
 	return (
 		<div className="mx-10 my-4">
 			<ScrollArea
-				className="h-full p-5 mb-5 border-none bg-white"
+				className="h-[100vh] p-5 mb-5 border-none bg-white"
 			>
 				{messageHistoryListCurrent.map((messageContent) => {
 					return <Message key={messageContent.id} message={messageContent} />;

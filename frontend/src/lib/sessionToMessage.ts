@@ -15,6 +15,7 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: query.body,
 							time: query.createdAt,
 							error: false,
+							sessionUuid: session.id
 						},
 						{
 							id: response.id.toString(),
@@ -22,6 +23,7 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: response.body,
 							time: response.createdAt,
 							error: false,
+							sessionUuid: session.id
 						},
 					];
 				}
@@ -33,6 +35,7 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: query.body,
 							time: query.createdAt,
 							error: false,
+							sessionUuid: session.id
 						},
 					];
 				}

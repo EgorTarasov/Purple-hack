@@ -20,7 +20,7 @@ const ChatHistoryShared = () => {
 					const historySessions = sessions.data;
 	
 					if (historySessions) {
-						const newMessageLists: IMessage[][] = sessionToMessage(historySessions);
+						const newMessageLists: IMessage[][] = sessionToMessage([historySessions]);
 						setMessageSharedList(newMessageLists[0]);
 					}
 				} catch (error) {
@@ -40,7 +40,7 @@ const ChatHistoryShared = () => {
 						<div className="grow">
 							<div className="mx-10 my-4">
 								Чат {id}
-								<ScrollArea className="h-full p-5 mb-5 border-none bg-white">
+								<ScrollArea className="h-[100vh] p-5 mb-5 border-none bg-white">
 									{messageSharedList.map((messageContent) => {
 										return (
 											<Message

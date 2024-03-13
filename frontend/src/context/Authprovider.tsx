@@ -1,5 +1,4 @@
 import { sessionToMessage } from "@/lib/sessionToMessage";
-import storage from "@/lib/storage";
 import { IMessage, ISession } from "@/models";
 import ApiSession from "@/services/apiSession";
 import {
@@ -46,7 +45,7 @@ const AuthContext = createContext<AuthContextProps>({
 
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [isAuthorized, setIsAuthorized] = useState<boolean>(storage.getToken());
+	const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 	const [userSessions, setUserSessions] = useState<ISession[]>([]);
 	const [messageHistoryLists, setMessageHistoryLists] = useState<IMessage[][]>([]);
 	const [messageHistoryListCurrent, setMessageHistoryListCurrent] = useState<IMessage[]>([]);

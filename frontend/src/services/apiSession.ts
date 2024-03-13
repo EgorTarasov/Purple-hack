@@ -11,8 +11,8 @@ const ApiSession = {
         return response;
     },
     async getHistotySharedSession(uuid: string) {
-        const response = await axios.get<ISession[]>(
-            `${BASE_URL}/api/sessions/list/${uuid}`,
+        const response = await axios.get<ISession>(
+            `${BASE_URL}/api/sessions/${uuid}`,
         );
         return response;
     },
