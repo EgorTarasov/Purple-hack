@@ -15,13 +15,13 @@ type ResponseRepo struct {
 }
 
 const insertOneResponse = `
-	insert into response(fk_session_id, query_id, body, context, created_at)
+	insert into response(fk_session_id, fk_query_id, body, context, created_at)
 	values ($1, $2, $3, $4, $5)
 	returning id;
 `
 
 const findManyResponse = `
-	select id, fk_session_id, query_id, body, context, created_at
+	select id, fk_session_id, fk_query_id, body, context, created_at
 	from response
 	where fk_session_id=$1;
 `

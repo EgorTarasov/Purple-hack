@@ -19,9 +19,11 @@ type SessionController struct {
 	responseRepo api.ResponseRepo
 }
 
-func NewSessionController(sr api.SessionRepo) *SessionController {
+func NewSessionController(sr api.SessionRepo, qr api.QueryRepo, rr api.ResponseRepo) *SessionController {
 	return &SessionController{
-		sessionRepo: sr,
+		sessionRepo:  sr,
+		queryRepo:    qr,
+		responseRepo: rr,
 	}
 }
 

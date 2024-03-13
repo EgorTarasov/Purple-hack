@@ -22,7 +22,7 @@ func NewSessionHandler(sc api.SessionController) *SessionHandler {
 }
 
 func (h *SessionHandler) FindOneById(ctx *fiber.Ctx) error {
-	sessionId, err := uuid.Parse(ctx.Params("sessionId"))
+	sessionId, err := uuid.Parse(ctx.Params("id"))
 	if err != nil {
 		return shared.ErrSessionIdInvalid
 	}
@@ -36,7 +36,7 @@ func (h *SessionHandler) FindOneById(ctx *fiber.Ctx) error {
 }
 
 func (h *SessionHandler) List(ctx *fiber.Ctx) error {
-	userId, err := strconv.ParseInt(ctx.Params("userId"), 10, 64)
+	userId, err := strconv.ParseInt(ctx.Cookies("auth"), 10, 64)
 	if err != nil {
 		return shared.ErrUserIdInvalid
 	}

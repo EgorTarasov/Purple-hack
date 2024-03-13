@@ -1,7 +1,7 @@
 FROM golang:1.22.0 as builder
 WORKDIR /builder
 
-RUN mkdir logs
+RUN mkdir -p ./logs
 
 COPY go.mod go.sum ./
 RUN go mod download
