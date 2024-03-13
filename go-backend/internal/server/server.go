@@ -53,7 +53,7 @@ func New(cfg *config.Config) *Server {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     cfg.Server.CorsOrigins,
 		AllowMethods:     "*",
-		AllowHeaders:     "*",
+		AllowHeaders:     "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
 		AllowCredentials: true,
 	}))
 
@@ -99,7 +99,7 @@ func (s *Server) Run() {
 	responseRepo := repo.NewResponseRepo(s.pg)
 	userRepo := repo.NewUserRepo(s.pg)
 
-	sessionController := controller.NewSessionController(sessionRepo)
+	sessionController := controller.NewSessionController(sessionRepo, queryRepo, responseRepo)
 	queryController := controller.NewQueryController(queryRepo)
 	responseController := controller.NewResponseController(responseRepo, searchEngineConn)
 	userController := controller.NewUserController(userRepo)

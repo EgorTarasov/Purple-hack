@@ -21,7 +21,7 @@ const insertOneQuery = `
 `
 
 const findManyQuery = `
-	select id, fk_session_id, body, user_agent, created_at
+	select id, fk_session_id, body, model, user_agent, created_at
 	from query
 	where fk_session_id=$1;
 `

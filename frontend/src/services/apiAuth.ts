@@ -6,6 +6,7 @@ interface UserLogin {
     password: string;
 }
 
+axios.defaults.withCredentials = true;
 
 const ApiAuth = {
     async loginUser(data: UserLogin) {

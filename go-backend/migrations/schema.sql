@@ -17,7 +17,7 @@ create table if not exists query(
 create table if not exists response(
     id bigserial primary key,
     fk_session_id uuid references session(id),
-    query_id bigint references query(id),
+    fk_query_id bigint references query(id),
     body text not null,
     context jsonb not null,
     created_at timestamp default current_timestamp
