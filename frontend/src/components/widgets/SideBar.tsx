@@ -55,10 +55,14 @@ export default function SideBar() {
 				Новый чат
 			</Button>
 			<ScrollArea className="w-100% grow">
-				<div className="my-4">Активный чат</div>
-				<Button variant="secondary" className="w-full p-2 mb-2" key={id}>
-					{messageList[0] ? messageList[0].data.substring(0, 35) : id}
-				</Button>
+				{messageList.length !== 0 && (
+					<>
+						<div className="my-4">Активный чат</div>
+						<Button variant="secondary" className="w-full p-2 mb-2" key={id}>
+							{messageList[0] ? messageList[0].data.substring(0, 35) : id}
+						</Button>
+					</>
+				)}
 				{isAuthorized && (
 					<>
 						<div className="my-4">История чатов</div>

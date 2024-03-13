@@ -6,6 +6,7 @@ import ModelSelect from "@/components/widgets/ModelSelect";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const Chat = () => {
 	const { id } = useParams<{ id: string }>();
@@ -16,6 +17,25 @@ const Chat = () => {
 	const handleModelSelectChange = (value: string) => {
 		setSelectedModel(value);
 	};
+
+	function handleShareSessionButton(){
+		const sharedLink = window.location.href.replace("chat", "history-shared");
+		navigator.clipboard.writeText(sharedLink);
+		toast({
+			title: "Ссылка скопирована",
+			description: (
+				<div>
+					<p>Вы можете поделиться историей чата</p>
+					<p>
+						<a href={sharedLink} target="_blank" style={{userSelect: 'all', textDecoration: 'underline'}}> 
+							{sharedLink}
+						</a>
+					</p>
+				</div>
+			)
+		});
+		
+	}
 
 	return (
 		<>
@@ -30,7 +50,7 @@ const Chat = () => {
 						<div className="grow">
 							<div className="m-2 flex justify-between">
 								<ModelSelect onSelectChange={handleModelSelectChange} />
-								<Button>
+								<Button onClick={handleShareSessionButton}>
 									<Download />
 								</Button>
 							</div>
