@@ -27,13 +27,13 @@ export default ApiSession;
 //                 id: 1,
 //                 model: "model1",
 //                 body: "query1",
-//                 createdAt: new Date("2024-03-13T08:00:00Z")
+//                 createdAt: "2024-03-13T08:00:00Z"
 //             },
 //             {
 //                 id: 2,
 //                 model: "model2",
 //                 body: "query2",
-//                 createdAt: new Date("2024-03-13T08:10:00Z")
+//                 createdAt: "2024-03-13T08:10:00Z"
 //             }
 //         ],
 //         responses: [
@@ -41,16 +41,16 @@ export default ApiSession;
 //                 id: 3,
 //                 context: {"key1": ["value1", "value2"]},
 //                 body: "response1",
-//                 createdAt: new Date("2024-03-13T08:05:00Z")
+//                 createdAt: "2024-03-13T08:05:00Z"
 //             },
 //             {
 //                 id: 4,
 //                 context: {"key2": ["value3", "value4"]},
 //                 body: "response2",
-//                 createdAt: new Date("2024-03-13T08:15:00Z")
+//                 createdAt: "2024-03-13T08:15:00Z"
 //             }
 //         ],
-//         createdAt: new Date("2024-03-13T07:55:00Z")
+//         createdAt: "2024-03-13T07:55:00Z"
 //     },
 //     {
 //         id: "session2",
@@ -59,30 +59,36 @@ export default ApiSession;
 //                 id: 5,
 //                 model: "model3",
 //                 body: "query3",
-//                 createdAt: new Date("2024-03-13T08:20:00Z")
+//                 createdAt: "2024-03-13T08:20:00Z"
 //             },
 //             {
-//                 id: 6,
+//                 id: 79,
 //                 model: "model4",
 //                 body: "query4",
-//                 createdAt: new Date("2024-03-13T08:30:00Z")
-//             }
+//                 createdAt: "2024-03-13T08:30:00Z"
+//             },
+//             {
+//                 id: 56,
+//                 model: "model4",
+//                 body: "query5",
+//                 createdAt: "2024-03-13T08:30:00Z"
+//             },
 //         ],
 //         responses: [
 //             {
 //                 id: 7,
 //                 context: {"key3": ["value5", "value6"]},
 //                 body: "response3",
-//                 createdAt: new Date("2024-03-13T08:25:00Z")
+//                 createdAt: "2024-03-13T08:25:00Z"
 //             },
 //             {
-//                 id: 8,
-//                 context: {"key4": ["value7", "value8"]},
-//                 body: "response4",
-//                 createdAt: new Date("2024-03-13T08:35:00Z")
-//             }
+//                 id: 98,
+//                 context: {"key3": ["value5", "value6"]},
+//                 body: "response5",
+//                 createdAt: "2024-03-13T08:25:00Z"
+//             },
 //         ],
-//         createdAt: new Date("2024-03-13T08:15:00Z")
+//         createdAt: "2024-03-13T08:15:00Z"
 //     }
 // ];
 

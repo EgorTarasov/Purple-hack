@@ -4,12 +4,10 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 	const newMessageLists: IMessage[][] = [];
 	userSessions.map((session) => {
 		const newMessageList: IMessage[] = session.queries.flatMap(
-			(query: IQuery) => {
-				// const response: IResponses = session.responses[index];
-				const response: IResponses | undefined = session.responses.find((resp) => {
-					return resp.id === query.id
-				});
-				if(response){
+			(query: IQuery, index: number) => {
+				let response: IResponses;
+				if (session.responses[index]) {
+					response = session.responses[index]
 					return [
 						{
 							id: query.id.toString(),
@@ -17,7 +15,6 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: query.body,
 							time: query.createdAt,
 							error: false,
-							sessionUuid: session.id,
 						},
 						{
 							id: response.id.toString(),
@@ -25,7 +22,6 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: response.body,
 							time: response.createdAt,
 							error: false,
-							sessionUuid: session.id,
 						},
 					];
 				}
@@ -37,7 +33,6 @@ export function sessionToMessage(userSessions: ISession[]): IMessage[][] {
 							data: query.body,
 							time: query.createdAt,
 							error: false,
-							sessionUuid: session.id,
 						},
 					];
 				}

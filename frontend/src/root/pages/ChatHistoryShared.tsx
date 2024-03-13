@@ -40,7 +40,7 @@ const ChatHistoryShared = () => {
 						<div className="grow">
 							<div className="mx-10 my-4">
 								Чат {id}
-								<ScrollArea className="h-[calc(100vh-250px)] p-5 mb-5 border-none bg-white">
+								<ScrollArea className="h-full p-5 mb-5 border-none bg-white">
 									{messageSharedList.map((messageContent) => {
 										return (
 											<Message

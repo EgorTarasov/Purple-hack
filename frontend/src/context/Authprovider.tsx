@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 					setUserSessions(sessions.data);
 
 					console.log("sessions", userSessions);
-					console.log("sessions from resp", sessions);
+					console.log("sessions from resp", sessions.data);
 
 					if (sessions.data) {
 						const newMessageLists: IMessage[][] = sessionToMessage(sessions.data);
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		console.log('here2')
 
 		console.log("cookie", document.cookie);
-		console.log("sessions", userSessions);
+		console.log("sessions auth", userSessions);
 	}, [isAuthorized]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
