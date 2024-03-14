@@ -20,7 +20,7 @@ class VectorStore:
         table_name: str = "vector_search",
     ) -> None:
         self.client = Client.from_url(
-            "clickhouse://testuser:superstrongpassword@larek.tech:65002/default"
+            "clickhouse://user:password@localhost:9000/default"
         )
         self.table_name = table_name
         self.model = embedding_model
