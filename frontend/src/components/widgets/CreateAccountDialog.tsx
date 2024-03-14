@@ -25,10 +25,14 @@ import { z } from "zod";
 import { toast } from "../ui/use-toast";
 import PropagateLoader from "react-spinners/PropagateLoader";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import uuid from "react-uuid";
 
 export default function CreateAccountDialog() {
 	const { isAuthorized, setIsAuthorized } = useAuth();
 	const [isUserLoading, setIsUserLoading] = useState(false);
+	const navigate = useNavigate();
+	const { pathname } = useLocation();
 
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof SigninValidationSchema>>({
@@ -43,12 +47,11 @@ export default function CreateAccountDialog() {
 	async function onSubmit(values: z.infer<typeof SigninValidationSchema>) {
 		setIsUserLoading(true);
 		try {
-			const session = await ApiAuth.loginUser({
+			await ApiAuth.loginUser({
 				email: values.email,
 				password: values.password,
 			});
 
-			console.log("resp", session);
 			form.reset();
 			setIsAuthorized(true);
 			return true;
@@ -59,6 +62,7 @@ export default function CreateAccountDialog() {
 			});
 		} finally {
 			setIsUserLoading(false);
+			if(pathname.includes("history")) navigate(`/chat/${uuid()}`);
 		}
 	}
 

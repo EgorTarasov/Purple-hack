@@ -13,17 +13,19 @@ const ChatHistoryShared = () => {
 
 	useEffect(() => {
 		async function fetchData() {
-			try {
-				// Получение сессий
-				const sessions = await ApiSession.getUserSession();
-				const historySessions = sessions.data;
-
-				if (historySessions) {
-					const newMessageLists: IMessage[][] = sessionToMessage(historySessions);
-					setMessageSharedList(newMessageLists[0]);
+			if(id){
+				try {
+					// Получение сессий
+					const sessions = await ApiSession.getHistotySharedSession(id);
+					const historySessions = sessions.data;
+	
+					if (historySessions) {
+						const newMessageLists: IMessage[][] = sessionToMessage([historySessions]);
+						setMessageSharedList(newMessageLists[0]);
+					}
+				} catch (error) {
+					console.log(error);
 				}
-			} catch (error) {
-				console.log(error);
 			}
 		}
 
@@ -38,7 +40,7 @@ const ChatHistoryShared = () => {
 						<div className="grow">
 							<div className="mx-10 my-4">
 								Чат {id}
-								<ScrollArea className="h-[calc(100vh-250px)] p-5 mb-5 border-none bg-white">
+								<ScrollArea className="h-[100vh] p-5 mb-5 border-none bg-white">
 									{messageSharedList.map((messageContent) => {
 										return (
 											<Message

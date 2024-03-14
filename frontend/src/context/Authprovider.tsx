@@ -17,7 +17,9 @@ interface AuthContextProps {
 	messageHistoryLists: IMessage[][];
 	setMessageHistoryLists: React.Dispatch<React.SetStateAction<IMessage[][]>>;
 	messageHistoryListCurrent: IMessage[];
-	setMessageHistoryListCurrent: React.Dispatch<React.SetStateAction<IMessage[]>>;
+	setMessageHistoryListCurrent: React.Dispatch<
+		React.SetStateAction<IMessage[]>
+	>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
@@ -31,29 +33,23 @@ const AuthContext = createContext<AuthContextProps>({
 	setMessageHistoryListCurrent: () => {},
 });
 
-function getCookie(name: string): string {
-	const nameLenPlus = name.length + 1;
-	return document.cookie
-		.split(";")
-		.map((c) => c.trim())
-		.filter((cookie) => {
-			return cookie.substring(0, nameLenPlus) === `${name}=`;
-		})[0];
-	// .map((cookie) => {
-	// 	return decodeURIComponent(cookie.substring(nameLenPlus));
-	// })[0]
-}
+// function getCookie(name: string): string {
+// 	const nameLenPlus = name.length + 1;
+// 	return document.cookie
+// 		.split(";")
+// 		.map((c) => c.trim())
+// 		.filter((cookie) => {
+// 			return cookie.substring(0, nameLenPlus) === `${name}=`;
+// 		})[0];
+// }
+
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [isAuthorized, setIsAuthorized] = useState<boolean>(
-		getCookie("auth") !== undefined
-	);
+	const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
 	const [userSessions, setUserSessions] = useState<ISession[]>([]);
-	const [messageHistoryLists, setMessageHistoryLists] = useState<IMessage[][]>(
-		[]
-	);
-	const [messageHistoryListCurrent, setMessageHistoryListCurrent] = useState<
-		IMessage[]
-	>([]);
+	const [messageHistoryLists, setMessageHistoryLists] = useState<IMessage[][]>([]);
+	const [messageHistoryListCurrent, setMessageHistoryListCurrent] = useState<IMessage[]>([]);
+
 	const value = {
 		isAuthorized,
 		setIsAuthorized,
@@ -65,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setMessageHistoryListCurrent,
 	};
 
-	useEffect(() => {
-		setIsAuthorized(getCookie("auth") !== undefined);
-	}, []);
+	// useEffect(() => {
+	// 	setIsAuthorized(getCookie("auth") !== undefined);
+	// }, []);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -75,19 +71,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				try {
 					// Получение сессий
 					const sessions = await ApiSession.getUserSession();
+					// setUserSessions(sessions.data);
 					setUserSessions(sessions.data);
-	
-					if (userSessions) {
-						const newMessageLists: IMessage[][] = sessionToMessage(userSessions);
+
+					console.log("sessions", userSessions);
+					console.log("sessions from resp", sessions.data);
+
+					if (sessions.data) {
+						const newMessageLists: IMessage[][] = sessionToMessage(sessions.data);
 						setMessageHistoryLists(newMessageLists);
 					}
 				} catch (error) {
-					console.log(error)
+					console.log(error);
 				}
 			}
 		}
-	
+
 		fetchData();
+		console.log('here2')
+
+		console.log("cookie", document.cookie);
+		console.log("sessions auth", userSessions);
 	}, [isAuthorized]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
