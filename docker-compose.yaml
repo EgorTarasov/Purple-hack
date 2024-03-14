@@ -11,15 +11,14 @@ services:
       context: ./python-backend
       dockerfile: Dockerfile
     environment:
-      - PG_CONN_STR=${PG_CONN_STR}
-      - MONGO_CONN_STR=${MONGO_CONN_STR}
-      - OLLAMA_API=${OLLAMA_API}
+      - CLICKHOUSE_URI=${CLICKHOUSE_URI}
+      - OLLAMA_URI=${OLLAMA_API}
     restart: always
     volumes:
       - models-cache:/root/.cache/huggingface/hub/
     ports:
       - "10000:10000"
-    command: [ "python3", "server.py" ]
+    command: [ "python3", "main.py" ]
 
   pg:
     image: pgvector/pgvector:pg15
@@ -46,6 +45,14 @@ services:
     command: ./main
     volumes:
       - ./go-backend/logs:/logs
+  frontend:
+      build:
+        context: "./frontend"
+        dockerfile: "Dockerfile"
+      ports:
+        - "3000:3000"
+
+
 
   # mongo:
   #   image: "mongo:5.0"
