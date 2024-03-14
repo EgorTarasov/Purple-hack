@@ -60,6 +60,7 @@ func (h *AuthHandler) Login(ctx *fiber.Ctx) error {
 		Expires:  pkg.GetLocalTime().Add(time.Hour * 12),
 		Secure:   false,
 		HTTPOnly: false,
+		SameSite: "None",
 	})
 
 	return ctx.SendStatus(http.StatusOK)

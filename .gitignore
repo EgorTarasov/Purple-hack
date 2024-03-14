@@ -10,8 +10,12 @@ news-parser/pages
 data.json
 node_modules
 __pycache__
+
+api.purple.larek.tech.conf
+python-ml/foo.py
 faq-parser/faq-pages
 faq-parser/faq-pages-linked
 faq-parser/faq.html
 faq-parser/qa
 faq-parser/qa-linked
+
